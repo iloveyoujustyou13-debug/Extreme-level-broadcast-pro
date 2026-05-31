@@ -1,4 +1,4 @@
-              <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         body { background-color: #030712; color: #f9fafb; font-family: system-ui, -apple-system, sans-serif; }
-        .neon-border-rose { box-shadow: 0 0 15px rgba(244, 63, 94, 0.3); border-color: rgba(244, 63, 94, 0.8); }
         .vMix-panel { background: linear-gradient(135deg, #0f172a 0%, #020617 100%); border: 1px solid #1e293b; }
         .audio-meter-bar { transition: width 0.05s ease-out; }
         canvas { transition: filter 0.2s ease-in-out; }
@@ -17,13 +16,16 @@
         :fullscreen #mainContent { padding: 0 !important; max-width: 100vw !important; height: 100vh !important; justify-content: center !important; }
         :fullscreen #canvasFrameWrapper { border: none !important; border-radius: 0 !important; width: 100vw !important; height: 100vh !important; max-width: 100vw !important; }
         :fullscreen #programCanvas { width: 100vw !important; height: 100vh !important; object-fit: contain !important; }
+        
+        :fullscreen #monitorWrapper { border: none !important; border-radius: 0 !important; width: 100vw !important; height: 100vh !important; }
+        :fullscreen #remoteMonitorVideo { width: 100vw !important; height: 100vh !important; object-fit: contain !important; }
     </style>
 </head>
 <body class="p-3 md:p-6 min-h-screen flex flex-col justify-between select-none">
 
     <div id="mainContent" class="flex-1 flex flex-col justify-between max-w-7xl mx-auto w-full">
         
-        <!-- Top Premier Control Deck Navbar -->
+        <!-- Top Navbar -->
         <header id="topNavbar" class="flex flex-col sm:flex-row justify-between items-center mb-6 bg-slate-950 border border-slate-900 p-4 rounded-2xl shadow-2xl gap-4">
             <div class="flex items-center gap-3">
                 <span class="text-2xl">⚡</span>
@@ -36,17 +38,17 @@
                 ⚡ Engage Audio System
             </button>
             <div class="text-[11px] font-mono text-emerald-400 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 font-bold">
-                Engine text v7.0.0-Server-Ultra-Live
+                Engine Master v7.0.5-Fixed
             </div>
         </header>
 
-        <!-- 🚪 Lobby Selector Window Gate -->
+        <!-- Lobby Gate Selector -->
         <div id="lobbyGate" class="max-w-3xl mx-auto my-auto w-full vMix-panel rounded-3xl p-8 shadow-2xl text-center">
             <h2 class="text-xl font-black text-slate-200 mb-2 uppercase tracking-wide">Select Production Workspace</h2>
             <p class="text-xs text-slate-400 mb-8">কন্ট্রোল রুম তৈরি করতে ডিরেক্টর মোড, ক্যামেরা কাস্টের জন্য ক্যামেরা মোড অথবা মনিটরের জন্য মনিটর মোড বাছুন</p>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button onclick="openWorkspace('director')" class="group border border-rose-500/20 bg-slate-950/80 p-6 rounded-2xl transition-all flex flex-col items-center gap-3 hover:neon-border-rose">
+                <button onclick="openWorkspace('director')" class="group border border-rose-500/20 bg-slate-950/80 p-6 rounded-2xl transition-all flex flex-col items-center gap-3 hover:border-rose-500">
                     <div class="text-2xl">🎬</div>
                     <span class="font-black text-rose-400 tracking-wider uppercase text-sm">Director Desk</span>
                 </button>
@@ -61,7 +63,7 @@
             </div>
         </div>
 
-        <!-- 🎬 Window 1: Director Dashboard Control Room Desk -->
+        <!-- Window 1: Director Desk Control Room -->
         <div id="directorWindow" class="hidden w-full">
             <div id="ratioBar" class="flex flex-col sm:flex-row justify-between items-center border-b border-slate-800 pb-4 mb-4 gap-4">
                 <div class="flex items-center gap-3">
@@ -78,7 +80,6 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Left Video Core Zone Inside Studio Grid -->
                 <div class="lg:col-span-2 flex flex-col gap-4">
                     <div class="bg-slate-950 p-3 rounded-xl border border-slate-850 flex justify-between items-center">
                         <span class="text-xs font-black text-slate-400 uppercase">📺 Screen Aspect Ratio:</span>
@@ -99,7 +100,7 @@
                         📺 GO FULLSCREEN (PGM ONLY)
                     </button>
 
-                    <!-- Matrix Switcher -->
+                    <!-- Switcher Matrix Grid -->
                     <div id="mainControls" class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 shadow-xl">
                         <div class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3" id="activeCamCount">ENGAGED CHANNELS: 0/4</div>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -109,7 +110,6 @@
                                     <video id="v-cam1" autoplay playsinline muted class="w-full h-full object-cover"></video>
                                     <div id="thumb-cam1" class="absolute inset-0 flex items-center justify-center text-[10px] text-slate-600 bg-black font-mono">NO FEED</div>
                                 </div>
-                                <div class="text-[9px] font-mono text-slate-400 flex justify-between pointer-events-none"><span>Bitrate:</span><span id="bitrate-cam1">0 Kbps</span></div>
                             </div>
                             <div onclick="selectLiveCamChannel('cam2')" id="box-cam2" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-35 transition-all select-none">
                                 <div class="text-[10px] font-black flex justify-between mb-1 pointer-events-none"><span>CAM 2</span><span id="status-cam2" class="text-red-500">OFFLINE</span></div>
@@ -117,7 +117,6 @@
                                     <video id="v-cam2" autoplay playsinline muted class="w-full h-full object-cover"></video>
                                     <div id="thumb-cam2" class="absolute inset-0 flex items-center justify-center text-[10px] text-slate-600 bg-black font-mono">NO FEED</div>
                                 </div>
-                                <div class="text-[9px] font-mono text-slate-400 flex justify-between pointer-events-none"><span>Bitrate:</span><span id="bitrate-cam2">0 Kbps</span></div>
                             </div>
                             <div onclick="selectLiveCamChannel('cam3')" id="box-cam3" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-35 transition-all select-none">
                                 <div class="text-[10px] font-black flex justify-between mb-1 pointer-events-none"><span>CAM 3</span><span id="status-cam3" class="text-red-500">OFFLINE</span></div>
@@ -125,7 +124,6 @@
                                     <video id="v-cam3" autoplay playsinline muted class="w-full h-full object-cover"></video>
                                     <div id="thumb-cam3" class="absolute inset-0 flex items-center justify-center text-[10px] text-slate-600 bg-black font-mono">NO FEED</div>
                                 </div>
-                                <div class="text-[9px] font-mono text-slate-400 flex justify-between pointer-events-none"><span>Bitrate:</span><span id="bitrate-cam3">0 Kbps</span></div>
                             </div>
                             <div onclick="selectLiveCamChannel('cam4')" id="box-cam4" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-35 transition-all select-none">
                                 <div class="text-[10px] font-black flex justify-between mb-1 pointer-events-none"><span>CAM 4</span><span id="status-cam4" class="text-red-500">OFFLINE</span></div>
@@ -133,41 +131,30 @@
                                     <video id="v-cam4" autoplay playsinline muted class="w-full h-full object-cover"></video>
                                     <div id="thumb-cam4" class="absolute inset-0 flex items-center justify-center text-[10px] text-slate-600 bg-black font-mono">NO FEED</div>
                                 </div>
-                                <div class="text-[9px] font-mono text-slate-400 flex justify-between pointer-events-none"><span>Bitrate:</span><span id="bitrate-cam4">0 Kbps</span></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Master Control Column Dashboard Grid -->
-                <div class="space-y-4 flex flex-col justify-start">
-                    <!-- Audio Mixer Panel Layer Interface -->
+                <!-- Right Side Control Desk Grid -->
+                <div id="mainControls" class="space-y-4 flex flex-col justify-start">
+                    <!-- Audio Board Mixer -->
                     <div class="bg-slate-950 border border-slate-850 rounded-2xl p-4 shadow-xl">
                         <div class="border-b border-slate-800 pb-2 mb-3 flex justify-between items-center">
                             <h3 class="text-xs font-black uppercase text-emerald-400 tracking-wider">🎙️ Audio Matrix Mixer</h3>
-                            <span class="text-[9px] text-slate-500 font-mono">VU METER</span>
                         </div>
                         <div class="w-full bg-slate-900 h-2.5 rounded-full mb-4 overflow-hidden p-0.5 border border-slate-800">
                             <div id="vuMeterBar" class="audio-meter-bar w-0 h-full bg-gradient-to-r from-emerald-500 via-amber-400 to-red-500 rounded-full"></div>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-center">
-                                <span class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Commentary Mic</span>
-                                <button id="micToggleBtn" onclick="toggleCommentaryMic()" class="w-full text-[10px] font-black py-2 rounded-lg transition uppercase bg-slate-800 text-slate-400 shadow">MIC: OFF</button>
-                            </div>
-                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-center">
-                                <span class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Field FX Audio</span>
-                                <button id="fieldAudioToggleBtn" onclick="toggleFieldAudio()" class="w-full text-[10px] font-black py-2 rounded-lg transition uppercase bg-emerald-600 text-white shadow">FIELD: ON</button>
-                            </div>
+                            <button id="micToggleBtn" onclick="toggleCommentaryMic()" class="text-[10px] font-black py-2 rounded-lg bg-slate-800 text-slate-400 uppercase">MIC: OFF</button>
+                            <button id="fieldAudioToggleBtn" onclick="toggleFieldAudio()" class="text-[10px] font-black py-2 rounded-lg bg-emerald-600 text-white uppercase">FIELD: ON</button>
                         </div>
                     </div>
 
-                    <!-- Live TV Overlays Interactive Data Center -->
+                    <!-- TV Graphics Content Engine -->
                     <div class="bg-slate-950 border border-slate-850 rounded-2xl p-4 shadow-xl">
-                        <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-4">
-                            <h3 class="text-xs font-black uppercase text-slate-400">TV Graphics Control</h3>
-                            <button id="overlaySwitchBtn" onclick="toggleScoreboardOverlay()" class="bg-blue-600 text-[10px] font-black px-3 py-1 rounded-lg uppercase shadow">Graphics: ON</button>
-                        </div>
+                        <h3 class="text-xs font-black uppercase text-slate-400 border-b border-slate-800 pb-2 mb-3">TV Graphics Control</h3>
                         <div class="space-y-3">
                             <div class="grid grid-cols-2 gap-2">
                                 <input type="text" id="scoreInput" value="IND 145/4" class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold focus:outline-none">
@@ -182,16 +169,11 @@
                         </div>
                     </div>
 
-                    <!-- 🖥️ Monitor Link Remote Uplink Server Control Block -->
+                    <!-- 🖥️ Monitor Link Remote Transmitter -->
                     <div class="bg-slate-950 border border-slate-850 rounded-2xl p-4 shadow-xl">
-                        <div class="border-b border-slate-800 pb-2 mb-3">
-                            <h3 class="text-xs font-black uppercase text-blue-400 tracking-wider">🖥️ Monitor Remote Transmitter</h3>
-                        </div>
-                        <p class="text-[10px] text-slate-500 mb-3 uppercase font-medium">ইউটিউব স্ক্রিন রেকর্ড নোডের জন্য আলাদা সিক্রেট ১০-ডিজিট মনিটর কোড তৈরি করুন</p>
-                        
+                        <h3 class="text-xs font-black uppercase text-blue-400 border-b border-slate-800 pb-2 mb-3">🖥️ Monitor Remote Transmitter</h3>
                         <div class="space-y-3">
-                            <div id="monitorCodeContainer" class="hidden bg-slate-900 border border-slate-800 p-3 rounded-xl text-center shadow-inner">
-                                <span class="block text-[9px] text-slate-500 font-bold uppercase mb-1">SECRET MONITOR NODE CODE</span>
+                            <div id="monitorCodeContainer" class="hidden bg-slate-900 border border-slate-800 p-3 rounded-xl text-center">
                                 <span id="monitor10DigitCodeBox" class="text-blue-400 font-mono font-black text-lg tracking-widest">----------</span>
                             </div>
                             <button id="genMonitorBtn" onclick="generateDedicatedMonitorCode()" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black py-2.5 rounded-xl uppercase tracking-wider shadow transition">
@@ -203,57 +185,51 @@
             </div>
         </div>
 
-        <!-- Window 2: Ground Camera Link Ingestion Panel -->
+        <!-- Window 2: Ground Camera Ingestion Node -->
         <div id="cameraWindow" class="hidden max-w-md mx-auto my-auto w-full vMix-panel rounded-3xl p-6 text-center shadow-2xl">
-            <div class="flex items-center gap-3 mb-6 border-b border-slate-800 pb-3">
-                <button onclick="exitToLobby()" class="text-xs font-bold text-slate-400 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">← Cancel</button>
-                <h2 class="font-black text-emerald-400 uppercase text-xs tracking-wider">Field Transmission Node</h2>
-            </div>
+            <h2 class="font-black text-emerald-400 uppercase text-xs tracking-wider mb-4">Field Transmission Node</h2>
             <div id="joinGateWindow">
-                <input type="text" id="studioRoomCode" placeholder="CBP-XXXXXXXX" class="w-full bg-slate-950 border border-slate-850 rounded-2xl p-4 text-center font-mono font-black text-xl text-emerald-400 uppercase tracking-widest mb-6 focus:outline-none focus:border-emerald-500 transition shadow-inner">
-                <button onclick="activateFieldCameraNode()" class="w-full bg-emerald-600 text-white font-bold py-4 rounded-xl uppercase text-xs font-black tracking-widest shadow-xl">Establish Camera Uplink</button>
+                <input type="text" id="studioRoomCode" placeholder="CBP-XXXXXXXX" class="w-full bg-slate-950 border border-slate-850 rounded-2xl p-4 text-center font-mono font-black text-xl text-emerald-400 uppercase tracking-widest mb-6 focus:outline-none">
+                <button onclick="activateFieldCameraNode()" class="w-full bg-emerald-600 text-white font-bold py-4 rounded-xl uppercase text-xs tracking-widest shadow-xl">Establish Camera Uplink</button>
             </div>
             <div id="streamingActiveWindow" class="hidden">
-                <div class="text-emerald-400 font-black text-xs mb-4" id="assignedNodeName">FEED INJECTED</div>
-                <div class="aspect-video bg-black rounded-2xl overflow-hidden border border-slate-800 mb-4 shadow-inner">
+                <div class="aspect-video bg-black rounded-2xl overflow-hidden mb-4">
                     <video id="localCamMonitor" autoplay playsinline muted class="w-full h-full object-cover"></video>
                 </div>
             </div>
         </div>
 
-        <!-- Window 3: External Secondary Display Monitor Mode -->
+        <!-- Window 3: External Virtual Monitor Mode (FIXED PLAYBACK) -->
         <div id="monitorWindow" class="hidden max-w-md mx-auto my-auto w-full vMix-panel rounded-3xl p-6 text-center shadow-2xl">
-            <div class="flex items-center gap-3 mb-6 border-b border-slate-800 pb-3">
-                <button onclick="exitToLobby()" class="text-xs font-bold text-slate-400 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">← Cancel</button>
-                <h2 class="font-black text-blue-400 uppercase text-xs tracking-wider">Virtual Live Monitor</h2>
-            </div>
+            <h2 class="font-black text-blue-400 uppercase text-xs tracking-wider mb-4">Virtual Live Monitor</h2>
             <div id="monitorJoinGate">
-                <p class="text-xs text-slate-400 mb-4 leading-relaxed">মেইন ডিরেক্টর প্যানেলে জেনারেট হওয়া ১০-ডিজিটের সিক্রেট মনিটর কোডটি এখানে দিন।</p>
-                <input type="text" id="monitorRoomCode" placeholder="MTR-XXXXXXXXXX" class="w-full bg-slate-950 border border-slate-850 rounded-2xl p-4 text-center font-mono font-black text-xl text-blue-400 uppercase tracking-widest mb-6 focus:outline-none focus:border-blue-500 transition shadow-inner">
-                <button onclick="activateVirtualMonitorNode()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl uppercase text-xs font-black tracking-widest shadow-xl">Connect Live Feed Monitor</button>
+                <input type="text" id="monitorRoomCode" placeholder="MTR-XXXXXXXXXX" class="w-full bg-slate-950 border border-slate-850 rounded-2xl p-4 text-center font-mono font-black text-xl text-blue-400 uppercase tracking-widest mb-6 focus:outline-none">
+                <button onclick="activateVirtualMonitorNode()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl uppercase text-xs tracking-widest shadow-xl">Connect Live Feed Monitor</button>
             </div>
             <div id="monitorActiveView" class="hidden w-full flex flex-col gap-4">
-                <div class="text-blue-400 font-black text-xs tracking-widest animate-pulse">🔴 MONITORING LIVE BROADCAST</div>
-                <div class="aspect-video bg-black rounded-2xl overflow-hidden border border-slate-800 relative shadow-2xl" id="monitorWrapper">
-                    <video id="remoteMonitorVideo" autoplay playsinline class="w-full h-full object-cover"></video>
+                <div class="aspect-video bg-black rounded-2xl overflow-hidden relative shadow-2xl" id="monitorWrapper">
+                    <!-- 🚨 অটোপ্লে পলিসি ব্রেকার লকিং এখানে ফিক্স করা হয়েছে -->
+                    <video id="remoteMonitorVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
                 </div>
+                <!-- সাউন্ড অন করার জন্য ডেডিকেটেড এক্সট্রা একশন বাটন -->
+                <button onclick="document.getElementById('remoteMonitorVideo').muted=false; this.style.display='none';" class="w-full bg-amber-500 text-slate-950 font-black py-2.5 rounded-xl uppercase text-xs tracking-wider">
+                    🔊 UNMUTE MONITOR AUDIO (ভিডিও সাউন্ড চালু করো)
+                </button>
                 <button onclick="document.getElementById('monitorWrapper').requestFullscreen()" class="w-full bg-blue-600 text-white text-xs font-black py-3 rounded-xl uppercase tracking-wider shadow">
-                    📺 GO FULLSCREEN (ইউটিউব স্ক্রিন রেকর্ড অন করো)
+                    Template 📺 GO FULLSCREEN
                 </button>
             </div>
         </div>
 
         <footer id="bottomFooter" class="text-center text-[10px] text-slate-600 mt-6 uppercase tracking-widest">
-            &copy; 2026 CBP • Engine Engine v7.0.0-Server-Ultra-Live
+            &copy; 2026 CBP • Engine v7.0.5-Stable-Matrix
         </footer>
     </div>
 
-    <!-- JavaScript Real-time Processing Engine Core Systems Matrix -->
     <script>
-        // 📡 নতুন আল্ট্রা রেন্ডার ক্লাউড সার্ভার সকেট গেটওয়ে ডাইরেক্ট রাউটিং লিংক
         const SERVER_URL = 'wss://server-ultra.onrender.com';
 
-        let wsDirector, wsCamera, wsMonitor, localMediaStream, pcCam, pcMonitor;
+        let wsDirector, wsCamera, wsMonitor;
         let peerConnections = {};
         let connectedCount = 0;
         let activeLiveStreamId = null;
@@ -261,15 +237,10 @@
         let currentTargetRatio = "16:9";
         let generatedMonitorCodeString = null; 
 
-        let audioCtx = null;
-        let directorMicStream = null;
-        let directorMicNode = null;
+        let audioCtx = null, masterAudioDestination = null, audioAnalyser = null;
+        let directorMicStream = null, directorMicNode = null;
         let fieldAudioNodes = {}; 
-        let masterAudioDestination = null;
-        let audioAnalyser = null;
-
-        let isMicEnabled = false;
-        let isFieldAudioEnabled = true;
+        let isMicEnabled = false, isFieldAudioEnabled = true;
 
         const canvas = document.getElementById('programCanvas');
         const ctx = canvas.getContext('2d');
@@ -279,7 +250,6 @@
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 masterAudioDestination = audioCtx.createMediaStreamDestination();
                 masterAudioDestination.connect(audioCtx.destination); 
-                
                 audioAnalyser = audioCtx.createAnalyser();
                 audioAnalyser.fftSize = 32;
                 masterAudioDestination.connect(audioAnalyser);
@@ -288,7 +258,7 @@
             if (audioCtx.state === 'suspended') { audioCtx.resume(); }
             let btn = document.getElementById('audioEngageBtn');
             btn.innerText = "🟢 Audio Pipeline Engaged";
-            btn.className = "bg-emerald-600 text-white text-xs font-black px-6 py-2 rounded-xl transition shadow-lg uppercase tracking-widest pointer-events-none animate-none";
+            btn.className = "bg-emerald-600 text-white text-xs font-black px-6 py-2 rounded-xl transition pointer-events-none animate-none";
         }
 
         function updateVisualVUMeter() {
@@ -319,26 +289,14 @@
         });
 
         function generateDedicatedMonitorCode() {
-            if (!wsDirector || wsDirector.readyState !== 1) {
-                return alert("প্রথমে ওপরের 'Initialize Cloud Network' বাটনে ক্লিক করে ক্লাউড কানেকশন চালু করুন!");
-            }
-            
+            if (!wsDirector || wsDirector.readyState !== 1) return alert("প্রথমে ওপরের 'Initialize Cloud Network' বাটনে ক্লিক করে ক্লাউড কানেকশন চালু করুন!");
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let randomCode = 'MTR-';
-            for (let i = 0; i < 10; i++) {
-                randomCode += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            
+            for (let i = 0; i < 10; i++) { randomCode += chars.charAt(Math.floor(Math.random() * chars.length)); }
             generatedMonitorCodeString = randomCode;
-            
-            wsDirector.send(JSON.stringify({
-                type: 'register_monitor_node',
-                monitorCode: generatedMonitorCodeString
-            }));
-
+            wsDirector.send(JSON.stringify({ type: 'register_monitor_node', monitorCode: generatedMonitorCodeString }));
             document.getElementById('monitorCodeContainer').classList.remove('hidden');
             document.getElementById('monitor10DigitCodeBox').innerText = generatedMonitorCodeString;
-            document.getElementById('genMonitorBtn').innerText = "🔄 RE-GENERATE MONITOR CODE";
         }
 
         function changeOutputAspectRatio() {
@@ -373,24 +331,17 @@
                     directorMicNode.connect(masterAudioDestination);
                     isMicEnabled = true;
                     btn.innerText = "MIC: ONLINE";
-                    btn.className = "w-full text-[10px] font-black py-2 rounded-lg transition uppercase bg-red-600 text-white animate-pulse shadow-md";
                 } catch (e) { alert("মাইক্রোফোন পারমিশন চেক করুন!"); }
             } else {
                 if (directorMicStream) { directorMicStream.getTracks().forEach(t => t.stop()); }
                 isMicEnabled = false;
                 btn.innerText = "MIC: OFF";
-                btn.className = "w-full text-[10px] font-black py-2 rounded-lg transition uppercase bg-slate-800 text-slate-400";
             }
         }
 
         function toggleFieldAudio() {
-            let btn = document.getElementById('fieldAudioToggleBtn');
             isFieldAudioEnabled = !isFieldAudioEnabled;
-            if (isFieldAudioEnabled) {
-                btn.innerText = "FIELD: ON"; btn.className = "w-full text-[10px] font-black py-2 rounded-lg transition uppercase bg-emerald-600 text-white shadow-md";
-            } else {
-                btn.innerText = "FIELD: MUTED"; btn.className = "w-full text-[10px] font-black py-2 rounded-lg transition uppercase bg-amber-600 text-white shadow-md";
-            }
+            document.getElementById('fieldAudioToggleBtn').innerText = isFieldAudioEnabled ? "FIELD: ON" : "FIELD: MUTED";
             Object.keys(fieldAudioNodes).forEach(id => {
                 if (fieldAudioNodes[id] && fieldAudioNodes[id].gain) { fieldAudioNodes[id].gain.value = isFieldAudioEnabled ? 1.0 : 0.0; }
             });
@@ -483,11 +434,7 @@
             document.getElementById(`box-${camId}`).classList.add('border-red-600', 'ring-2', 'ring-red-600/50');
         }
 
-        function toggleScoreboardOverlay() { 
-            renderOverlayActive = !renderOverlayActive; 
-            let btn = document.getElementById('overlaySwitchBtn');
-            btn.innerText = renderOverlayActive ? "Graphics: ON" : "Graphics: OFF";
-        }
+        function toggleScoreboardOverlay() { renderOverlayActive = !renderOverlayActive; }
 
         function renderBroadcastPipeline() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -529,7 +476,7 @@
                 if (currentTargetRatio === "9:16") {
                     ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 11px sans-serif'; ctx.fillText(document.getElementById('oversInput').value.toUpperCase(), baseOffset + 180, canvas.height - 82);
                     ctx.fillStyle = '#e2e8f0'; ctx.font = 'italic 11px sans-serif'; ctx.fillText(document.getElementById('batsmanInput').value, baseOffset + 180, canvas.height - 68);
-                    ctx.fillStyle = '#fbbf24'; font = 'bold 10px sans-serif'; ctx.fillText(rrText.toUpperCase(), baseOffset + 25, canvas.height - 50);
+                    ctx.fillStyle = '#fbbf24'; ctx.font = 'bold 10px sans-serif'; ctx.fillText(rrText.toUpperCase(), baseOffset + 25, canvas.height - 50);
                 } else {
                     ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px sans-serif'; ctx.fillText(document.getElementById('oversInput').value.toUpperCase(), baseOffset + 240, canvas.height - 64);
                     ctx.fillStyle = '#3b82f6'; ctx.fillRect(baseOffset + 380, canvas.height - 90, 2, 35);
@@ -591,7 +538,11 @@
                         let remoteVideo = document.getElementById('remoteMonitorVideo');
                         if (event.streams && event.streams[0]) {
                             remoteVideo.srcObject = event.streams[0];
-                            remoteVideo.play().catch(e => console.log(e));
+                            remoteVideo.play().catch(e => {
+                                // ক্রোম অটোপ্লে সিকিউরিটি বাইপাস ব্যাকআপ ট্র্রিগার
+                                remoteVideo.muted = true;
+                                remoteVideo.play();
+                            });
                         }
                     };
 
@@ -612,4 +563,3 @@
     </script>
 </body>
 </html>
-                    
