@@ -1,4 +1,4 @@
-                                    <!DOCTYPE html>
+         <!DOCTYPE html>
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
@@ -11,14 +11,24 @@
         .vMix-panel { background: linear-gradient(135deg, #0f172a 0%, #020617 100%); border: 1px solid #1e293b; }
         .audio-meter-bar { transition: width 0.05s ease-out; }
         canvas { transition: filter 0.2s ease-in-out; }
+
+        /* 📺 ফুলস্ক্রিন ম্যাজিক সিএসএস (যা টাইপিং বক্স ও বাটনগুলোকে রেকর্ডিং থেকে লুকিয়ে ফেলে) */
+        :fullscreen #mainControls, :fullscreen #topNavbar, :fullscreen #bottomFooter, :fullscreen #ratioBar, :fullscreen .fullscreen-hide-btn { display: none !important; }
+        :fullscreen #mainContent { padding: 0 !important; max-width: 100vw !important; height: 100vh !important; justify-content: center !important; }
+        :fullscreen #canvasFrameWrapper { border: none !important; border-radius: 0 !important; width: 100vw !important; height: 100vh !important; max-width: 100vw !important; }
+        :fullscreen #programCanvas { width: 100vw !important; height: 100vh !important; object-fit: contain !important; }
+
+        /* সাফারি এবং ওল্ড ব্রাউজার সাপোর্ট */
+        :-webkit-full-screen #mainControls, :-webkit-full-screen #topNavbar, :-webkit-full-screen #bottomFooter, :-webkit-full-screen #ratioBar { display: none !important; }
+        :-webkit-full-screen #canvasFrameWrapper { border: none !important; border-radius: 0 !important; width: 100vw !important; height: 100vh !important; }
     </style>
 </head>
 <body class="p-3 md:p-6 min-h-screen flex flex-col justify-between select-none">
 
-    <div id="mainContent" class="flex-1 flex flex-col justify-between">
+    <div id="mainContent" class="flex-1 flex flex-col justify-between max-w-7xl mx-auto w-full">
         
         <!-- Top Premium Bar -->
-        <header class="flex flex-col sm:flex-row justify-between items-center mb-6 bg-slate-950 border border-slate-900 p-4 rounded-2xl shadow-2xl gap-4">
+        <header id="topNavbar" class="flex flex-col sm:flex-row justify-between items-center mb-6 bg-slate-950 border border-slate-900 p-4 rounded-2xl shadow-2xl gap-4">
             <div class="flex items-center gap-3">
                 <span class="text-2xl">⚡</span>
                 <div>
@@ -26,12 +36,11 @@
                     <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Extreme Enterprise Multi-Cam Switcher</p>
                 </div>
             </div>
-            <!-- 🎧 ব্রাউজার লক ব্রেকার বাটন (সাউন্ড সমস্যার চিরতরে সমাধান) -->
             <button id="audioEngageBtn" onclick="forceEngageAudioEngine()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black px-6 py-2 rounded-xl transition shadow-lg animate-bounce uppercase tracking-widest">
                 ⚡ Engage Audio System (হেডফোন লক খোলো)
             </button>
             <div class="text-[11px] font-mono text-emerald-400 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 font-bold">
-                Engine v5.0.0-Super-Power-Armed
+                Engine text v5.5.0-Record-Focus-Master
             </div>
         </header>
 
@@ -52,8 +61,8 @@
         </div>
 
         <!-- 🎬 উইন্ডো ১: ডিরেক্টর ড্যাশবোর্ড -->
-        <div id="directorWindow" class="hidden max-w-7xl mx-auto w-full vMix-panel rounded-3xl p-4 md:p-6 shadow-2xl">
-            <div class="flex flex-col sm:flex-row justify-between items-center border-b border-slate-800 pb-4 mb-4 gap-4">
+        <div id="directorWindow" class="hidden w-full">
+            <div id="ratioBar" class="flex flex-col sm:flex-row justify-between items-center border-b border-slate-800 pb-4 mb-4 gap-4">
                 <div class="flex items-center gap-3">
                     <button onclick="exitToLobby()" class="text-xs font-bold text-slate-400 hover:text-white bg-slate-950 px-3 py-2 rounded-xl border border-slate-800">← Exit Desk</button>
                     <h2 class="font-black text-rose-400 tracking-wide uppercase text-sm">Director Desk</h2>
@@ -62,14 +71,15 @@
                     Initialize Cloud Network
                 </button>
                 <div id="codeDisplaySection" class="hidden items-center gap-2">
-                    <span class="text-xs font-bold text-slate-400">SECRET ROOM CODE:</span>
+                    <span class="text-xs font-bold text-slate-400">SECRET CODE:</span>
                     <span id="secretCodeBox" class="bg-rose-500/10 border border-rose-500/30 text-rose-400 font-mono font-black text-xl px-4 py-1.5 rounded-xl tracking-widest shadow-inner">--------</span>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left Video Core Zone -->
                 <div class="lg:col-span-2 flex flex-col gap-4">
-                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-850 flex justify-between items-center">
+                    <div id="ratioBar" class="bg-slate-950 p-3 rounded-xl border border-slate-850 flex justify-between items-center">
                         <span class="text-xs font-black text-slate-400 uppercase">📺 Screen Aspect Ratio:</span>
                         <select id="canvasRatioSelector" onchange="changeOutputAspectRatio()" class="bg-slate-900 border border-slate-800 text-xs font-bold text-rose-400 p-2 rounded-xl focus:outline-none cursor-pointer">
                             <option value="16:9" selected>16:9 (YouTube Standard Wide)</option>
@@ -79,17 +89,22 @@
                         </select>
                     </div>
 
-                    <!-- Live Master Canvas Output -->
+                    <!-- Live Master Canvas Output Wrapper (এটাই ফুলস্ক্রিন হবে) -->
                     <div class="bg-slate-950 border-2 border-red-600 rounded-2xl overflow-hidden relative aspect-video flex items-center justify-center shadow-2xl" id="canvasFrameWrapper">
                         <div class="bg-red-600 text-white text-[9px] font-black px-2.5 py-1.5 uppercase absolute top-0 left-0 z-10 rounded-br-lg tracking-widest">🔴 PGM OUT (LIVE AIR)</div>
                         <canvas id="programCanvas" width="1280" height="720" class="w-full h-full bg-black block"></canvas>
                     </div>
 
+                    <!-- 📺 ফুলস্ক্রিন অ্যাক্টিভেশন বাটন -->
+                    <button onclick="launchCanvasFullscreen()" class="fullscreen-hide-btn w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-black py-4 rounded-xl uppercase tracking-widest shadow-xl transition-all duration-200">
+                        📺 GO FULLSCREEN (ইউটিউব স্ক্রিন রেকর্ডের জন্য এটি অন করো)
+                    </button>
+
                     <!-- Matrix Switcher -->
-                    <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 shadow-xl">
+                    <div id="mainControls" class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 shadow-xl">
                         <div class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3" id="activeCamCount">ENGAGED CHANNELS: 0/4</div>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                            <!-- Camera 1 -->
+                            <!-- Cameras Slots -->
                             <div onclick="selectLiveCamChannel('cam1')" id="box-cam1" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-35 transition-all select-none">
                                 <div class="text-[10px] font-black flex justify-between mb-1 pointer-events-none"><span>CAM 1</span><span id="status-cam1" class="text-red-500">OFFLINE</span></div>
                                 <div class="aspect-video bg-black rounded-lg mb-2 overflow-hidden relative pointer-events-none">
@@ -98,7 +113,6 @@
                                 </div>
                                 <div class="text-[9px] font-mono text-slate-400 flex justify-between pointer-events-none"><span>Bitrate:</span><span id="bitrate-cam1">0 Kbps</span></div>
                             </div>
-                            <!-- Camera 2 -->
                             <div onclick="selectLiveCamChannel('cam2')" id="box-cam2" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-35 transition-all select-none">
                                 <div class="text-[10px] font-black flex justify-between mb-1 pointer-events-none"><span>CAM 2</span><span id="status-cam2" class="text-red-500">OFFLINE</span></div>
                                 <div class="aspect-video bg-black rounded-lg mb-2 overflow-hidden relative pointer-events-none">
@@ -107,7 +121,6 @@
                                 </div>
                                 <div class="text-[9px] font-mono text-slate-400 flex justify-between pointer-events-none"><span>Bitrate:</span><span id="bitrate-cam2">0 Kbps</span></div>
                             </div>
-                            <!-- Camera 3 -->
                             <div onclick="selectLiveCamChannel('cam3')" id="box-cam3" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-35 transition-all select-none">
                                 <div class="text-[10px] font-black flex justify-between mb-1 pointer-events-none"><span>CAM 3</span><span id="status-cam3" class="text-red-500">OFFLINE</span></div>
                                 <div class="aspect-video bg-black rounded-lg mb-2 overflow-hidden relative pointer-events-none">
@@ -116,7 +129,6 @@
                                 </div>
                                 <div class="text-[9px] font-mono text-slate-400 flex justify-between pointer-events-none"><span>Bitrate:</span><span id="bitrate-cam3">0 Kbps</span></div>
                             </div>
-                            <!-- Camera 4 -->
                             <div onclick="selectLiveCamChannel('cam4')" id="box-cam4" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-35 transition-all select-none">
                                 <div class="text-[10px] font-black flex justify-between mb-1 pointer-events-none"><span>CAM 4</span><span id="status-cam4" class="text-red-500">OFFLINE</span></div>
                                 <div class="aspect-video bg-black rounded-lg mb-2 overflow-hidden relative pointer-events-none">
@@ -129,8 +141,8 @@
                     </div>
                 </div>
 
-                <!-- Right Control Panel Structure -->
-                <div class="space-y-4 flex flex-col justify-between">
+                <!-- Right Control Panel Structure (ফুলস্ক্রিনে এটা হাইড হয়ে যাবে) -->
+                <div id="mainControls" class="space-y-4 flex flex-col justify-start">
                     
                     <!-- 🎙️ AUDIO MIXER + LIVE VU METER BLOCK -->
                     <div class="bg-slate-950 border border-slate-850 rounded-2xl p-4 shadow-xl">
@@ -139,7 +151,6 @@
                             <span class="text-[9px] text-slate-500 font-mono">VU METER</span>
                         </div>
                         
-                        <!-- 📊 লাইভ গ্রাফিক্যাল ভলিউম লেভেল বার (VU METER) -->
                         <div class="w-full bg-slate-900 h-2.5 rounded-full mb-4 overflow-hidden p-0.5 border border-slate-800">
                             <div id="vuMeterBar" class="audio-meter-bar w-0 h-full bg-gradient-to-r from-emerald-500 via-amber-400 to-red-500 rounded-full"></div>
                         </div>
@@ -158,6 +169,7 @@
                                 </button>
                             </div>
                         </div>
+                        <p class="text-[9px] text-slate-500 font-bold text-center mt-3 uppercase tracking-wide">🎧 Headphones will monitor audio automatically</p>
                     </div>
 
                     <!-- TV Graphics Overlays Input -->
@@ -173,9 +185,9 @@
                             </div>
                             <input type="text" id="batsmanInput" value="Virat Kohli 78*(45)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold focus:outline-none">
                             
-                            <!-- ⏳ টার্গেট এবং বল দেওয়ার কন্টেইনার (অটো রান রেট হিসাবের জন্য) -->
+                            <!-- ⏳ টার্গেট এবং রান রেট দেওয়ার বক্স -->
                             <div class="grid grid-cols-2 gap-2 bg-slate-900/60 p-2 rounded-xl border border-slate-850">
-                                <input type="number" id="targetInput" placeholder="Target Run (Optional)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-[10px] font-bold focus:outline-none text-amber-400">
+                                <input type="number" id="targetInput" placeholder="Target Run" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-[10px] font-bold focus:outline-none text-amber-400">
                                 <input type="text" id="customRrInput" value="CRR: 8.28" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-[10px] font-bold focus:outline-none text-blue-400">
                             </div>
 
@@ -183,19 +195,9 @@
                         </div>
                     </div>
 
-                    <!-- Social Media RTMP Pipeline Target -->
-                    <div class="bg-slate-950 border border-slate-850 rounded-2xl p-4 shadow-xl">
-                        <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
-                            <h3 class="text-xs font-black uppercase text-rose-500">Social Media RTMP Stream</h3>
-                            <span id="streamIndicator" class="text-[9px] bg-slate-900 text-slate-500 font-bold px-2 py-0.5 rounded border border-slate-800 uppercase tracking-wider">OFF AIR</span>
-                        </div>
-                        <div class="space-y-2 mb-3">
-                            <input type="text" id="rtmpUrlInput" placeholder="Paste Stream URL here" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-300 focus:outline-none font-mono">
-                            <input type="password" id="rtmpKeyInput" placeholder="Paste Stream Key here" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-300 focus:outline-none font-mono">
-                        </div>
-                        <button id="startLiveBtn" onclick="toggleCloudStreaming()" class="w-full bg-rose-600 text-white text-[10px] font-black py-2.5 rounded-xl uppercase tracking-wider font-black shadow-lg transition duration-200">
-                            GO LIVE ON YT/FB
-                        </button>
+                    <!-- Keyboard Hotkeys Info Box -->
+                    <div class="bg-slate-950 border border-slate-850 rounded-2xl p-4 shadow-xl text-center text-[11px] text-slate-400 font-medium leading-relaxed uppercase">
+                        ⌨️ <span class="text-rose-500 font-black">Fullscreen Hotline:</span> ফুলস্ক্রিন থাকা অবস্থায় ল্যাপটপের কীবোর্ডের <span class="text-white font-bold">1, 2, 3, 4</span> বাটন চেপে ব্লাইন্ড ক্যামেরা সুইচ করতে পারবে! বের হতে <span class="font-bold text-white">ESC</span> চাপো।
                     </div>
                 </div>
             </div>
@@ -222,12 +224,12 @@
             </div>
         </div>
 
-        <footer class="text-center text-[10px] text-slate-600 mt-6 uppercase tracking-widest">
-            &copy; 2026 CBP • Engine Version Ultimate Elite Matrix
+        <footer id="bottomFooter" class="text-center text-[10px] text-slate-600 mt-6 uppercase tracking-widest">
+            &copy; 2026 CBP • Engine Version Cast Focus Elite v5.5
         </footer>
     </div>
 
-    <!-- JavaScript Ultra Engine Script -->
+    <!-- JavaScript Engine Script -->
     <script>
         const SERVER_URL = 'wss://cbp-signaling.onrender.com';
 
@@ -236,17 +238,15 @@
         let connectedCount = 0;
         let activeLiveStreamId = null;
         let renderOverlayActive = true;
-        let isCloudStreamingActive = false;
-        let mediaRecorder = null;
         let currentTargetRatio = "16:9";
 
-        // 🎙️ Web Audio Multi-Mixer Configuration
+        // 🎙️ Web Audio Mixer System Graph
         let audioCtx = null;
         let directorMicStream = null;
         let directorMicNode = null;
         let fieldAudioNodes = {}; 
         let masterAudioDestination = null;
-        let audioAnalyser = null; // VU মিটারের জন্য এনালিসিস নোড
+        let audioAnalyser = null;
 
         let isMicEnabled = false;
         let isFieldAudioEnabled = true;
@@ -254,33 +254,27 @@
         const canvas = document.getElementById('programCanvas');
         const ctx = canvas.getContext('2d');
 
-        // ⚡ ব্রাউজার সিকিউরিটি আনলকার ইঞ্জিন (বাটন ক্লিক লজিক)
+        // ⚡ ব্রাউজার অটোপ্লে পলিসি ব্রেকার ইঞ্জিন
         function forceEngageAudioEngine() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 masterAudioDestination = audioCtx.createMediaStreamDestination();
-                masterAudioDestination.connect(audioCtx.destination);
+                masterAudioDestination.connect(audioCtx.destination); // হেডফোনে সাউন্ড রাউটিং অন করা হলো
                 
-                // VU মিটার এনালাইজার যুক্ত করা
                 audioAnalyser = audioCtx.createAnalyser();
                 audioAnalyser.fftSize = 32;
                 masterAudioDestination.connect(audioAnalyser);
                 updateVisualVUMeter();
             }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
             let btn = document.getElementById('audioEngageBtn');
-            btn.innerText = "🟢 Audio Pipeline Engaged (হেডফোন রেডি)";
+            btn.innerText = "🟢 Audio Pipeline Engaged (হেডফোন অ্যাক্টিভ)";
             btn.className = "bg-emerald-600 text-white text-xs font-black px-6 py-2 rounded-xl transition shadow-lg uppercase tracking-widest pointer-events-none animate-none";
         }
 
-        // 📊 রিয়েল-টাইম VU মিটার অ্যানিমেশন রানার
         function updateVisualVUMeter() {
             if (!audioAnalyser) return;
             const dataArray = new Uint8Array(audioAnalyser.frequencyBinCount);
-            
             function drawMeter() {
                 requestAnimationFrame(drawMeter);
                 audioAnalyser.getByteFrequencyData(dataArray);
@@ -288,11 +282,26 @@
                 for (let i = 0; i < dataArray.length; i++) { total += dataArray[i]; }
                 let average = total / dataArray.length;
                 let widthPercent = Math.min(100, Math.floor((average / 128) * 100));
-                
                 document.getElementById('vuMeterBar').style.width = (widthPercent > 5 ? widthPercent : 2) + '%';
             }
             drawMeter();
         }
+
+        // 📺 ডেডিকেটেড এলিমেন্ট ফুলস্ক্রিন লঞ্চার (ইউটিউব স্ক্রিন রেকর্ডের আসল সমাধান)
+        function launchCanvasFullscreen() {
+            let container = document.getElementById('canvasFrameWrapper');
+            if (container.requestFullscreen) { container.requestFullscreen(); }
+            else if (container.webkitRequestFullscreen) { container.webkitRequestFullscreen(); }
+            else if (container.msRequestFullscreen) { container.msRequestFullscreen(); }
+        }
+
+        // ⌨️ ফুলস্ক্রিন ব্লাইন্ড হট-কী সুইচার (1, 2, 3, 4 বাটন)
+        window.addEventListener('keydown', (e) => {
+            if (e.key === '1') selectLiveCamChannel('cam1');
+            if (e.key === '2') selectLiveCamChannel('cam2');
+            if (e.key === '3') selectLiveCamChannel('cam3');
+            if (e.key === '4') selectLiveCamChannel('cam4');
+        });
 
         function changeOutputAspectRatio() {
             let selector = document.getElementById('canvasRatioSelector');
@@ -315,23 +324,19 @@
 
         function exitToLobby() { window.location.reload(); }
 
-        // 🎙️ Commentary Microphone Engine
+        // 🎙️ Commentary Microphone Switch
         async function toggleCommentaryMic() {
             if (!audioCtx) forceEngageAudioEngine();
-
             let btn = document.getElementById('micToggleBtn');
             if (!isMicEnabled) {
                 try {
                     directorMicStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     directorMicNode = audioCtx.createMediaStreamSource(directorMicStream);
                     directorMicNode.connect(masterAudioDestination);
-                    
                     isMicEnabled = true;
                     btn.innerText = "MIC: ONLINE";
                     btn.className = "w-full text-[10px] font-black py-2 rounded-lg transition uppercase bg-red-600 text-white animate-pulse shadow-md";
-                } catch (e) {
-                    alert("মাইক্রোফোন পারমিশন চেক করুন!");
-                }
+                } catch (e) { alert("মাইক্রোফোন পারমিশন চেক করুন!"); }
             } else {
                 if (directorMicStream) { directorMicStream.getTracks().forEach(t => t.stop()); }
                 isMicEnabled = false;
@@ -340,23 +345,17 @@
             }
         }
 
-        // 🔊 Field Crowds Ambient Audio (Mute/Unmute Control)
+        // 🔊 Field Crowds Ambient Audio (Mute / Active)
         function toggleFieldAudio() {
             let btn = document.getElementById('fieldAudioToggleBtn');
             isFieldAudioEnabled = !isFieldAudioEnabled;
-
             if (isFieldAudioEnabled) {
-                btn.innerText = "FIELD: ON";
-                btn.className = "w-full text-[10px] font-black py-2 rounded-lg transition uppercase bg-emerald-600 text-white shadow-md";
+                btn.innerText = "FIELD: ON"; btn.className = "w-full text-[10px] font-black py-2 rounded-lg transition uppercase bg-emerald-600 text-white shadow-md";
             } else {
-                btn.innerText = "FIELD: MUTED";
-                btn.className = "w-full text-[10px] font-black py-2 rounded-lg transition uppercase bg-amber-600 text-white shadow-md";
+                btn.innerText = "FIELD: MUTED"; btn.className = "w-full text-[10px] font-black py-2 rounded-lg transition uppercase bg-amber-600 text-white shadow-md";
             }
-
             Object.keys(fieldAudioNodes).forEach(id => {
-                if (fieldAudioNodes[id] && fieldAudioNodes[id].gain) {
-                    fieldAudioNodes[id].gain.value = isFieldAudioEnabled ? 1.0 : 0.0;
-                }
+                if (fieldAudioNodes[id] && fieldAudioNodes[id].gain) { fieldAudioNodes[id].gain.value = isFieldAudioEnabled ? 1.0 : 0.0; }
             });
         }
 
@@ -384,17 +383,13 @@
                         if (event.streams && event.streams[0]) {
                             targetVideo.srcObject = event.streams[0];
                             targetVideo.onloadedmetadata = () => { targetVideo.play().catch(e => console.log(e)); };
-
                             if (!audioCtx) forceEngageAudioEngine();
-                            
                             if (event.streams[0].getAudioTracks().length > 0) {
                                 let sourceNode = audioCtx.createMediaStreamSource(event.streams[0]);
                                 let gainNode = audioCtx.createGain();
                                 gainNode.gain.value = isFieldAudioEnabled ? 1.0 : 0.0;
-                                
                                 sourceNode.connect(gainNode);
                                 gainNode.connect(masterAudioDestination);
-
                                 fieldAudioNodes[data.cameraId] = gainNode;
                             }
                         }
@@ -410,14 +405,12 @@
             };
         }
 
-        // 🎬 ক্যানভাস ক্যমেরা স্মুথ ট্রানজিশন সুইচ ইঞ্জিন ফিক্স
+        // 🎬 ক্যানভাস ক্যামেরা স্মুথ ট্রানজিশন ফেড-সুইচার
         function selectLiveCamChannel(camId) {
             let targetVideo = document.getElementById(`v-${camId}`);
             if(!targetVideo || !targetVideo.srcObject) return; 
-
-            // ট্রানজিশন এফেক্ট: ক্ষণিকের জন্য ফেড আউট
-            canvas.style.filter = "brightness(0.2) blur(5px)";
             
+            canvas.style.filter = "brightness(0.2) blur(5px)";
             setTimeout(() => {
                 activeLiveStreamId = camId;
                 targetVideo.play().catch(e => console.log(e));
@@ -426,51 +419,6 @@
 
             ['cam1','cam2','cam3','cam4'].forEach(id => document.getElementById(`box-${id}`).classList.remove('border-red-600', 'ring-2', 'ring-red-600/50'));
             document.getElementById(`box-${camId}`).classList.add('border-red-600', 'ring-2', 'ring-red-600/50');
-        }
-
-        function toggleCloudStreaming() {
-            if (!wsDirector || wsDirector.readyState !== 1) return alert("প্রথমে Cloud Network চালু করুন!");
-            let url = document.getElementById('rtmpUrlInput').value.trim();
-            let key = document.getElementById('rtmpKeyInput').value.trim();
-            if (!url || !key) return alert("URL এবং Key সঠিকভাবে দিন!");
-
-            if (!isCloudStreamingActive) {
-                wsDirector.send(JSON.stringify({ type: 'start_rtmp_stream', streamUrl: url, streamKey: key }));
-                isCloudStreamingActive = true;
-                document.getElementById('startLiveBtn').innerText = "STOP LIVE STREAM";
-                document.getElementById('startLiveBtn').className = "w-full bg-red-600 text-white text-[10px] font-black py-2.5 rounded-xl uppercase tracking-wider animate-pulse shadow-inner";
-                document.getElementById('streamIndicator').innerText = "🔴 ON AIR";
-
-                const canvasStream = canvas.captureStream(30);
-
-                if (masterAudioDestination && masterAudioDestination.stream.getAudioTracks().length > 0) {
-                    canvasStream.addTrack(masterAudioDestination.stream.getAudioTracks()[0]);
-                }
-
-                mediaRecorder = new MediaRecorder(canvasStream, { mimeType: 'video/webm;codecs=vp8,opus', videoBitsPerSecond: 2500000 });
-                mediaRecorder.ondataavailable = async (e) => {
-                    if (e.data && e.data.size > 0 && wsDirector.readyState === 1) {
-                        let buf = await e.data.arrayBuffer();
-                        let b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
-                        wsDirector.send(JSON.stringify({ type: 'binary_frame', frame: b64 }));
-                    }
-                };
-                mediaRecorder.start(100);
-            } else {
-                if(mediaRecorder) { mediaRecorder.stop(); mediaRecorder = null; }
-                wsDirector.send(JSON.stringify({ type: 'stop_rtmp_stream' }));
-                isCloudStreamingActive = false;
-                document.getElementById('startLiveBtn').innerText = "GO LIVE ON YT/FB";
-                document.getElementById('startLiveBtn').className = "w-full bg-rose-600 text-white text-[10px] font-black py-2.5 rounded-xl uppercase tracking-wider transition";
-                document.getElementById('streamIndicator').innerText = "OFF AIR";
-            }
-        }
-
-        function toggleScoreboardOverlay() { 
-            renderOverlayActive = !renderOverlayActive; 
-            let btn = document.getElementById('overlaySwitchBtn');
-            btn.innerText = renderOverlayActive ? "Graphics: ON" : "Graphics: OFF";
-            btn.className = renderOverlayActive ? "bg-blue-600 text-[10px] font-black px-3 py-1 rounded-lg uppercase" : "bg-slate-800 text-slate-400 text-[10px] font-black px-3 py-1 rounded-lg uppercase";
         }
 
         function renderBroadcastPipeline() {
@@ -506,12 +454,9 @@
                 ctx.fillStyle = '#ffffff'; ctx.font = (currentTargetRatio === "9:16") ? 'bold 18px monospace' : 'bold 26px monospace';
                 ctx.fillText(document.getElementById('scoreInput').value, baseOffset + 25, canvas.height - 63);
 
-                // ⏳ রান রেট এবং টার্গেট টেক্সট ওয়ান-লাইন রেন্ডারিং
                 let rrText = document.getElementById('customRrInput').value;
                 let targetVal = document.getElementById('targetInput').value;
-                if(targetVal) {
-                    rrText += " | TARGET: " + targetVal;
-                }
+                if(targetVal) { rrText += " | TARGET: " + targetVal; }
 
                 if (currentTargetRatio === "9:16") {
                     ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 11px sans-serif'; ctx.fillText(document.getElementById('oversInput').value.toUpperCase(), baseOffset + 180, canvas.height - 82);
@@ -521,8 +466,6 @@
                     ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px sans-serif'; ctx.fillText(document.getElementById('oversInput').value.toUpperCase(), baseOffset + 230, canvas.height - 64);
                     ctx.fillStyle = '#3b82f6'; ctx.fillRect(baseOffset + 380, canvas.height - 90, 2, 35);
                     ctx.fillStyle = '#e2e8f0'; ctx.font = 'italic 18px sans-serif'; ctx.fillText(document.getElementById('batsmanInput').value, baseOffset + 400, canvas.height - 64);
-                    
-                    // ওয়াইড স্ক্রিনে নিচে এক্সট্রা রান রেট বার রেন্ডার
                     ctx.fillStyle = '#a7f3d0'; ctx.font = 'bold 12px monospace'; ctx.fillText(rrText.toUpperCase(), baseOffset + 25, canvas.height - 52);
                 }
             }
@@ -560,4 +503,4 @@
         }
     </script>
 </body>
-</html>
+</html>                     
