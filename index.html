@@ -1,4 +1,4 @@
-                <!DOCTYPE html>
+              <!DOCTYPE html>
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
@@ -12,7 +12,7 @@
         .audio-meter-bar { transition: width 0.05s ease-out; }
         canvas { transition: filter 0.2s ease-in-out; }
 
-        /* 📺 ফুলস্ক্রিন মোড সিএসএস - টাইপিং প্যানেল হাইড করার জন্য */
+        /* 📺 ফুলস্ক্রিন রেকর্ডিং মোড সিএসএস */
         :fullscreen #mainControls, :fullscreen #topNavbar, :fullscreen #bottomFooter, :fullscreen #ratioBar, :fullscreen .fullscreen-hide-btn { display: none !important; }
         :fullscreen #mainContent { padding: 0 !important; max-width: 100vw !important; height: 100vh !important; justify-content: center !important; }
         :fullscreen #canvasFrameWrapper { border: none !important; border-radius: 0 !important; width: 100vw !important; height: 100vh !important; max-width: 100vw !important; }
@@ -23,6 +23,7 @@
 
     <div id="mainContent" class="flex-1 flex flex-col justify-between max-w-7xl mx-auto w-full">
         
+        <!-- Top Premier Control Deck Navbar -->
         <header id="topNavbar" class="flex flex-col sm:flex-row justify-between items-center mb-6 bg-slate-950 border border-slate-900 p-4 rounded-2xl shadow-2xl gap-4">
             <div class="flex items-center gap-3">
                 <span class="text-2xl">⚡</span>
@@ -32,13 +33,14 @@
                 </div>
             </div>
             <button id="audioEngageBtn" onclick="forceEngageAudioEngine()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black px-6 py-2 rounded-xl transition shadow-lg animate-bounce uppercase tracking-widest">
-                ⚡ Engage Audio System (হেডফোন ও অডিও আনলক)
+                ⚡ Engage Audio System
             </button>
             <div class="text-[11px] font-mono text-emerald-400 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 font-bold">
-                Engine v6.5.0-Separate-Monitor-Code
+                Engine text v7.0.0-Server-Ultra-Live
             </div>
         </header>
 
+        <!-- 🚪 Lobby Selector Window Gate -->
         <div id="lobbyGate" class="max-w-3xl mx-auto my-auto w-full vMix-panel rounded-3xl p-8 shadow-2xl text-center">
             <h2 class="text-xl font-black text-slate-200 mb-2 uppercase tracking-wide">Select Production Workspace</h2>
             <p class="text-xs text-slate-400 mb-8">কন্ট্রোল রুম তৈরি করতে ডিরেক্টর মোড, ক্যামেরা কাস্টের জন্য ক্যামেরা মোড অথবা মনিটরের জন্য মনিটর মোড বাছুন</p>
@@ -59,6 +61,7 @@
             </div>
         </div>
 
+        <!-- 🎬 Window 1: Director Dashboard Control Room Desk -->
         <div id="directorWindow" class="hidden w-full">
             <div id="ratioBar" class="flex flex-col sm:flex-row justify-between items-center border-b border-slate-800 pb-4 mb-4 gap-4">
                 <div class="flex items-center gap-3">
@@ -75,8 +78,9 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left Video Core Zone Inside Studio Grid -->
                 <div class="lg:col-span-2 flex flex-col gap-4">
-                    <div id="ratioBar" class="bg-slate-950 p-3 rounded-xl border border-slate-850 flex justify-between items-center">
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-850 flex justify-between items-center">
                         <span class="text-xs font-black text-slate-400 uppercase">📺 Screen Aspect Ratio:</span>
                         <select id="canvasRatioSelector" onchange="changeOutputAspectRatio()" class="bg-slate-900 border border-slate-800 text-xs font-bold text-rose-400 p-2 rounded-xl focus:outline-none cursor-pointer">
                             <option value="16:9" selected>16:9 (YouTube Standard Wide)</option>
@@ -95,6 +99,7 @@
                         📺 GO FULLSCREEN (PGM ONLY)
                     </button>
 
+                    <!-- Matrix Switcher -->
                     <div id="mainControls" class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 shadow-xl">
                         <div class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3" id="activeCamCount">ENGAGED CHANNELS: 0/4</div>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -134,7 +139,9 @@
                     </div>
                 </div>
 
-                <div id="mainControls" class="space-y-4 flex flex-col justify-start">
+                <!-- Right Master Control Column Dashboard Grid -->
+                <div class="space-y-4 flex flex-col justify-start">
+                    <!-- Audio Mixer Panel Layer Interface -->
                     <div class="bg-slate-950 border border-slate-850 rounded-2xl p-4 shadow-xl">
                         <div class="border-b border-slate-800 pb-2 mb-3 flex justify-between items-center">
                             <h3 class="text-xs font-black uppercase text-emerald-400 tracking-wider">🎙️ Audio Matrix Mixer</h3>
@@ -155,6 +162,7 @@
                         </div>
                     </div>
 
+                    <!-- Live TV Overlays Interactive Data Center -->
                     <div class="bg-slate-950 border border-slate-850 rounded-2xl p-4 shadow-xl">
                         <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-4">
                             <h3 class="text-xs font-black uppercase text-slate-400">TV Graphics Control</h3>
@@ -174,6 +182,7 @@
                         </div>
                     </div>
 
+                    <!-- 🖥️ Monitor Link Remote Uplink Server Control Block -->
                     <div class="bg-slate-950 border border-slate-850 rounded-2xl p-4 shadow-xl">
                         <div class="border-b border-slate-800 pb-2 mb-3">
                             <h3 class="text-xs font-black uppercase text-blue-400 tracking-wider">🖥️ Monitor Remote Transmitter</h3>
@@ -183,19 +192,18 @@
                         <div class="space-y-3">
                             <div id="monitorCodeContainer" class="hidden bg-slate-900 border border-slate-800 p-3 rounded-xl text-center shadow-inner">
                                 <span class="block text-[9px] text-slate-500 font-bold uppercase mb-1">SECRET MONITOR NODE CODE</span>
-                                <span id="monitor10DigitCodeBox" class="text-blue-400 font-mono font-black text-lg tracking-widest animate-pulse">----------</span>
+                                <span id="monitor10DigitCodeBox" class="text-blue-400 font-mono font-black text-lg tracking-widest">----------</span>
                             </div>
-
-                            <button id="genMonitorBtn" onclick="generateDedicatedMonitorCode()" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black py-2.5 rounded-xl uppercase tracking-wider font-black shadow transition">
+                            <button id="genMonitorBtn" onclick="generateDedicatedMonitorCode()" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black py-2.5 rounded-xl uppercase tracking-wider shadow transition">
                                 GENERATE MONITOR CODE
                             </button>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
 
+        <!-- Window 2: Ground Camera Link Ingestion Panel -->
         <div id="cameraWindow" class="hidden max-w-md mx-auto my-auto w-full vMix-panel rounded-3xl p-6 text-center shadow-2xl">
             <div class="flex items-center gap-3 mb-6 border-b border-slate-800 pb-3">
                 <button onclick="exitToLobby()" class="text-xs font-bold text-slate-400 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">← Cancel</button>
@@ -213,6 +221,7 @@
             </div>
         </div>
 
+        <!-- Window 3: External Secondary Display Monitor Mode -->
         <div id="monitorWindow" class="hidden max-w-md mx-auto my-auto w-full vMix-panel rounded-3xl p-6 text-center shadow-2xl">
             <div class="flex items-center gap-3 mb-6 border-b border-slate-800 pb-3">
                 <button onclick="exitToLobby()" class="text-xs font-bold text-slate-400 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">← Cancel</button>
@@ -220,11 +229,11 @@
             </div>
             <div id="monitorJoinGate">
                 <p class="text-xs text-slate-400 mb-4 leading-relaxed">মেইন ডিরেক্টর প্যানেলে জেনারেট হওয়া ১০-ডিজিটের সিক্রেট মনিটর কোডটি এখানে দিন।</p>
-                <input type="text" id="monitorRoomCode" placeholder="CBP-XXXXXXXXXX" class="w-full bg-slate-950 border border-slate-850 rounded-2xl p-4 text-center font-mono font-black text-xl text-blue-400 uppercase tracking-widest mb-6 focus:outline-none focus:border-blue-500 transition shadow-inner">
+                <input type="text" id="monitorRoomCode" placeholder="MTR-XXXXXXXXXX" class="w-full bg-slate-950 border border-slate-850 rounded-2xl p-4 text-center font-mono font-black text-xl text-blue-400 uppercase tracking-widest mb-6 focus:outline-none focus:border-blue-500 transition shadow-inner">
                 <button onclick="activateVirtualMonitorNode()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl uppercase text-xs font-black tracking-widest shadow-xl">Connect Live Feed Monitor</button>
             </div>
             <div id="monitorActiveView" class="hidden w-full flex flex-col gap-4">
-                <div class="text-blue-400 font-black text-xs tracking-widest">🔴 MONITORING LIVE BROADCAST</div>
+                <div class="text-blue-400 font-black text-xs tracking-widest animate-pulse">🔴 MONITORING LIVE BROADCAST</div>
                 <div class="aspect-video bg-black rounded-2xl overflow-hidden border border-slate-800 relative shadow-2xl" id="monitorWrapper">
                     <video id="remoteMonitorVideo" autoplay playsinline class="w-full h-full object-cover"></video>
                 </div>
@@ -235,12 +244,14 @@
         </div>
 
         <footer id="bottomFooter" class="text-center text-[10px] text-slate-600 mt-6 uppercase tracking-widest">
-            &copy; 2026 CBP • Engine Version Separate Matrix Node v6.5
+            &copy; 2026 CBP • Engine Engine v7.0.0-Server-Ultra-Live
         </footer>
     </div>
 
+    <!-- JavaScript Real-time Processing Engine Core Systems Matrix -->
     <script>
-        const SERVER_URL = 'wss://cbp-signaling.onrender.com';
+        // 📡 নতুন আল্ট্রা রেন্ডার ক্লাউড সার্ভার সকেট গেটওয়ে ডাইরেক্ট রাউটিং লিংক
+        const SERVER_URL = 'wss://server-ultra.onrender.com';
 
         let wsDirector, wsCamera, wsMonitor, localMediaStream, pcCam, pcMonitor;
         let peerConnections = {};
@@ -248,7 +259,7 @@
         let activeLiveStreamId = null;
         let renderOverlayActive = true;
         let currentTargetRatio = "16:9";
-        let generatedMonitorCodeString = null; // ১০ ডিজিটের মনিটর কি হোল্ডার
+        let generatedMonitorCodeString = null; 
 
         let audioCtx = null;
         let directorMicStream = null;
@@ -262,8 +273,6 @@
 
         const canvas = document.getElementById('programCanvas');
         const ctx = canvas.getContext('2d');
-
-        document.getElementById('mainContent').classList.remove('hidden');
 
         function forceEngageAudioEngine() {
             if (!audioCtx) {
@@ -300,7 +309,6 @@
         function launchCanvasFullscreen() {
             let container = document.getElementById('canvasFrameWrapper');
             if (container.requestFullscreen) { container.requestFullscreen(); }
-            else if (container.webkitRequestFullscreen) { container.webkitRequestFullscreen(); }
         }
 
         window.addEventListener('keydown', (e) => {
@@ -310,13 +318,11 @@
             if (e.key === '4') selectLiveCamChannel('cam4');
         });
 
-        // 🖥️ ১০-ডিজিট ডেডিকেটেড ভার্চুয়াল মনিটর কোড জেনারেটর কোড লজিক
         function generateDedicatedMonitorCode() {
             if (!wsDirector || wsDirector.readyState !== 1) {
                 return alert("প্রথমে ওপরের 'Initialize Cloud Network' বাটনে ক্লিক করে ক্লাউড কানেকশন চালু করুন!");
             }
             
-            // রানটাইম র্যান্ডম ১০-ডিজিটের প্রফেশনাল মনিটর কোড বিল্ডিং
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let randomCode = 'MTR-';
             for (let i = 0; i < 10; i++) {
@@ -325,7 +331,6 @@
             
             generatedMonitorCodeString = randomCode;
             
-            // সিগন্যালিং ক্লাউড সার্ভারকে মনিটর সাব-রুম আইডি রেডি করার কমান্ড পুশ
             wsDirector.send(JSON.stringify({
                 type: 'register_monitor_node',
                 monitorCode: generatedMonitorCodeString
@@ -334,7 +339,6 @@
             document.getElementById('monitorCodeContainer').classList.remove('hidden');
             document.getElementById('monitor10DigitCodeBox').innerText = generatedMonitorCodeString;
             document.getElementById('genMonitorBtn').innerText = "🔄 RE-GENERATE MONITOR CODE";
-            document.getElementById('genMonitorBtn').className = "w-full bg-slate-800 text-slate-400 text-[10px] font-black py-2.5 rounded-xl uppercase tracking-wider font-black shadow transition";
         }
 
         function changeOutputAspectRatio() {
@@ -403,17 +407,19 @@
                 let data = JSON.parse(message.data);
                 if (data.type === 'room_created') { document.getElementById('secretCodeBox').innerText = data.roomCode; }
                 
-                // ১০-ডিজিটের ভার্চুয়াল মনিটর রিকোয়েস্ট ক্যাচিং পাইপলাইন
                 else if (data.type === 'monitor_requested') {
                     let pcMon = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
                     peerConnections[data.monitorId] = pcMon;
 
+                    if (!audioCtx) forceEngageAudioEngine();
                     const canvasStream = canvas.captureStream(30);
+                    
                     if (masterAudioDestination && masterAudioDestination.stream.getAudioTracks().length > 0) {
                         canvasStream.addTrack(masterAudioDestination.stream.getAudioTracks()[0]);
                     }
 
                     canvasStream.getTracks().forEach(track => pcMon.addTrack(track, canvasStream));
+                    
                     pcMon.onicecandidate = (e) => {
                         if (e.candidate) wsDirector.send(JSON.stringify({ type: 'ice-candidate', targetId: data.monitorId, candidate: e.candidate }));
                     };
@@ -453,9 +459,14 @@
                     await pc.setLocalDescription(offer);
                     wsDirector.send(JSON.stringify({ type: 'offer', targetId: data.cameraId, offer }));
                 }
-                else if (data.type === 'answer') { await peerConnections[data.targetId || data.cameraId].setRemoteDescription(new RTCSessionDescription(data.answer)); }
-                else if (data.type === 'ice-candidate' && peerConnections[data.targetId || data.cameraId]) { await peerConnections[data.targetId || data.cameraId].addIceCandidate(new RTCIceCandidate(data.candidate)); }
-                else if (data.type === 'disconnect') { window.location.reload(); }
+                else if (data.type === 'answer') { 
+                    let target = peerConnections[data.targetId];
+                    if(target) await target.setRemoteDescription(new RTCSessionDescription(data.answer)); 
+                }
+                else if (data.type === 'ice-candidate') { 
+                    let target = peerConnections[data.targetId];
+                    if(target) await target.addIceCandidate(new RTCIceCandidate(data.candidate)); 
+                }
             };
         }
 
@@ -476,7 +487,6 @@
             renderOverlayActive = !renderOverlayActive; 
             let btn = document.getElementById('overlaySwitchBtn');
             btn.innerText = renderOverlayActive ? "Graphics: ON" : "Graphics: OFF";
-            btn.className = renderOverlayActive ? "bg-blue-600 text-[10px] font-black px-3 py-1 rounded-lg uppercase shadow" : "bg-slate-800 text-slate-400 text-[10px] font-black px-3 py-1 rounded-lg uppercase";
         }
 
         function renderBroadcastPipeline() {
@@ -519,7 +529,7 @@
                 if (currentTargetRatio === "9:16") {
                     ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 11px sans-serif'; ctx.fillText(document.getElementById('oversInput').value.toUpperCase(), baseOffset + 180, canvas.height - 82);
                     ctx.fillStyle = '#e2e8f0'; ctx.font = 'italic 11px sans-serif'; ctx.fillText(document.getElementById('batsmanInput').value, baseOffset + 180, canvas.height - 68);
-                    ctx.fillStyle = '#fbbf24'; ctx.font = 'bold 10px sans-serif'; ctx.fillText(rrText.toUpperCase(), baseOffset + 25, canvas.height - 50);
+                    ctx.fillStyle = '#fbbf24'; font = 'bold 10px sans-serif'; ctx.fillText(rrText.toUpperCase(), baseOffset + 25, canvas.height - 50);
                 } else {
                     ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px sans-serif'; ctx.fillText(document.getElementById('oversInput').value.toUpperCase(), baseOffset + 240, canvas.height - 64);
                     ctx.fillStyle = '#3b82f6'; ctx.fillRect(baseOffset + 380, canvas.height - 90, 2, 35);
@@ -550,11 +560,11 @@
                 else if (data.type === 'offer') {
                     pcCam = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
                     localMediaStream.getTracks().forEach(track => pcCam.addTrack(track, localMediaStream));
-                    pcCam.onicecandidate = (e) => { if (e.candidate) wsCamera.send(JSON.stringify({ type: 'ice-candidate', candidate: e.candidate })); };
+                    pcCam.onicecandidate = (e) => { if (e.candidate) wsCamera.send(JSON.stringify({ type: 'ice-candidate', targetId: data.targetId, candidate: e.candidate })); };
                     await pcCam.setRemoteDescription(new RTCSessionDescription(data.offer));
                     let answer = await pcCam.createAnswer();
                     await pcCam.setLocalDescription(answer);
-                    wsCamera.send(JSON.stringify({ type: 'answer', answer }));
+                    wsCamera.send(JSON.stringify({ type: 'answer', targetId: data.targetId, answer }));
                 }
                 else if (data.type === 'ice-candidate' && pcCam) { await pcCam.addIceCandidate(new RTCIceCandidate(data.candidate)); }
             };
@@ -562,7 +572,7 @@
 
         function activateVirtualMonitorNode() {
             let codeInput = document.getElementById('monitorRoomCode').value.trim().toUpperCase();
-            if(!codeInput) return alert("মেইন ডিরেক্টরের ১০-ডিজিট কোডটি দিন!");
+            if(!codeInput) return alert("১০-ডিজিট কোডটি দিন!");
 
             wsMonitor = new WebSocket(SERVER_URL);
             wsMonitor.onopen = () => wsMonitor.send(JSON.stringify({ type: 'join_monitor_room', roomCode: codeInput }));
@@ -586,13 +596,13 @@
                     };
 
                     pcMonitor.onicecandidate = (e) => {
-                        if (e.candidate) wsMonitor.send(JSON.stringify({ type: 'ice-candidate', candidate: e.candidate }));
+                        if (e.candidate) wsMonitor.send(JSON.stringify({ type: 'ice-candidate', targetId: data.targetId, candidate: e.candidate }));
                     };
 
                     await pcMonitor.setRemoteDescription(new RTCSessionDescription(data.offer));
                     let answer = await pcMonitor.createAnswer();
                     await pcMonitor.setLocalDescription(answer);
-                    wsMonitor.send(JSON.stringify({ type: 'answer', answer }));
+                    wsMonitor.send(JSON.stringify({ type: 'answer', targetId: data.targetId, answer }));
                 }
                 else if (data.type === 'ice-candidate' && pcMonitor) {
                     await pcMonitor.addIceCandidate(new RTCIceCandidate(data.candidate));
@@ -602,3 +612,4 @@
     </script>
 </body>
 </html>
+                    
