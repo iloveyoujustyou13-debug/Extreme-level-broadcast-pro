@@ -1,0 +1,21 @@
+body { 
+    background-color: #030712; 
+    color: #f9fafb; 
+    font-family: system-ui, -apple-system, sans-serif; 
+}
+
+.neon-border-rose { 
+    box-shadow: 0 0 15px rgba(244, 63, 94, 0.2); 
+    border-color: rgba(244, 63, 94, 0.6); 
+}
+
+.neon-border-emerald { 
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); 
+    border-color: rgba(16, 185, 129, 0.6); 
+}
+
+.vMix-panel { 
+    background: linear-gradient(135deg, #0f172a 0%, #020617 100%); 
+    border: 1px solid #1e293b; 
+}
+
