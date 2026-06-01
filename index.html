@@ -5,561 +5,216 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CBP - Cloud Broadcast Station Extreme</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>
-        body { background-color: #030712; color: #f9fafb; font-family: system-ui, -apple-system, sans-serif; }
-        .vMix-panel { background: linear-gradient(135deg, #0f172a 0%, #020617 100%); border: 1px solid #1e293b; }
-        .audio-meter-bar { transition: width 0.05s ease-out; }
-        canvas { transition: filter 0.2s ease-in-out; }
-
-        /* 📺 ফুলস্ক্রিন রেকর্ডিং মোড সিএসএস */
-        :fullscreen #mainControls, :fullscreen #topNavbar, :fullscreen #bottomFooter, :fullscreen #ratioBar, :fullscreen .fullscreen-hide-btn { display: none !important; }
-        :fullscreen #mainContent { padding: 0 !important; max-width: 100vw !important; height: 100vh !important; justify-content: center !important; }
-        :fullscreen #canvasFrameWrapper { border: none !important; border-radius: 0 !important; width: 100vw !important; height: 100vh !important; max-width: 100vw !important; }
-        :fullscreen #programCanvas { width: 100vw !important; height: 100vh !important; object-fit: contain !important; }
-        
-        :fullscreen #monitorWrapper { border: none !important; border-radius: 0 !important; width: 100vw !important; height: 100vh !important; }
-        :fullscreen #remoteMonitorVideo { width: 100vw !important; height: 100vh !important; object-fit: contain !important; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="p-3 md:p-6 min-h-screen flex flex-col justify-between select-none">
 
-    <div id="mainContent" class="flex-1 flex flex-col justify-between max-w-7xl mx-auto w-full">
+    <header class="flex justify-between items-center mb-6 bg-slate-950 border border-slate-900 p-4 rounded-2xl shadow-2xl">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">⚡</span>
+            <div>
+                <h1 class="text-xl font-black tracking-wider text-rose-500 bg-clip-text">CRICKET BROADCAST PRO</h1>
+                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Extreme Enterprise Multi-Cam Switcher</p>
+            </div>
+        </div>
+        <div class="text-[11px] font-mono text-slate-400 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
+            Engine v3.6.0-Live-Feed-Fixed
+        </div>
+    </header>
+
+    <div id="lobbyGate" class="max-w-3xl mx-auto my-auto w-full vMix-panel rounded-3xl p-8 shadow-2xl text-center">
+        <h2 class="text-xl font-black text-slate-200 mb-2 uppercase tracking-wide">Select Production Workspace</h2>
+        <p class="text-xs text-slate-400 mb-8">কন্ট্রোল রুম তৈরি করতে ডিরেক্টর মোড অথবা গ্রাউন্ড থেকে কাস্ট করতে ক্যামেরা মোড সিলেক্ট করুন</p>
         
-        <!-- Top Navbar -->
-        <header id="topNavbar" class="flex flex-col sm:flex-row justify-between items-center mb-6 bg-slate-950 border border-slate-900 p-4 rounded-2xl shadow-2xl gap-4">
-            <div class="flex items-center gap-3">
-                <span class="text-2xl">⚡</span>
-                <div>
-                    <h1 class="text-xl font-black tracking-wider text-rose-500">CRICKET BROADCAST PRO</h1>
-                    <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Extreme Enterprise Multi-Cam Switcher</p>
-                </div>
-            </div>
-            <button id="audioEngageBtn" onclick="forceEngageAudioEngine()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black px-6 py-2 rounded-xl transition shadow-lg animate-bounce uppercase tracking-widest">
-                ⚡ Engage Audio System
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <button onclick="openWorkspace('director')" class="group border border-rose-500/20 hover:neon-border-rose bg-slate-950/80 p-8 rounded-2xl transition-all duration-300 flex flex-col items-center gap-4 shadow-2xl">
+                <div class="w-14 h-14 bg-rose-500/10 rounded-full flex items-center justify-center text-3xl group-hover:bg-rose-500/20 transition">🎬</div>
+                <span class="font-black text-rose-400 tracking-wider uppercase text-base">Director Control Desk</span>
+                <span class="text-xs text-slate-400 leading-relaxed">কোনো ক্যামেরা পারমিশন ছাড়া ৪টি রিমোট ক্যামেরা ফিড ও লাইভ স্কোরবোর্ড ওভারলে ফুল মিক্সিং করুন।</span>
             </button>
-            <div class="text-[11px] font-mono text-emerald-400 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 font-bold">
-                Engine Master v7.0.5-Fixed
-            </div>
-        </header>
-
-        <!-- Lobby Gate Selector -->
-        <div id="lobbyGate" class="max-w-3xl mx-auto my-auto w-full vMix-panel rounded-3xl p-8 shadow-2xl text-center">
-            <h2 class="text-xl font-black text-slate-200 mb-2 uppercase tracking-wide">Select Production Workspace</h2>
-            <p class="text-xs text-slate-400 mb-8">কন্ট্রোল রুম তৈরি করতে ডিরেক্টর মোড, ক্যামেরা কাস্টের জন্য ক্যামেরা মোড অথবা মনিটরের জন্য মনিটর মোড বাছুন</p>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button onclick="openWorkspace('director')" class="group border border-rose-500/20 bg-slate-950/80 p-6 rounded-2xl transition-all flex flex-col items-center gap-3 hover:border-rose-500">
-                    <div class="text-2xl">🎬</div>
-                    <span class="font-black text-rose-400 tracking-wider uppercase text-sm">Director Desk</span>
-                </button>
-                <button onclick="openWorkspace('camera')" class="group border border-emerald-500/20 bg-slate-950/80 p-6 rounded-2xl transition-all flex flex-col items-center gap-3 hover:border-emerald-500/60">
-                    <div class="text-2xl">🎥</div>
-                    <span class="font-black text-emerald-400 tracking-wider uppercase text-sm">Field Camera</span>
-                </button>
-                <button onclick="openWorkspace('monitor')" class="group border border-blue-500/20 bg-slate-950/80 p-6 rounded-2xl transition-all flex flex-col items-center gap-3 hover:border-blue-500/60">
-                    <div class="text-2xl">🖥️</div>
-                    <span class="font-black text-blue-400 tracking-wider uppercase text-sm">Virtual Monitor</span>
-                </button>
-            </div>
+            <button onclick="openWorkspace('camera')" class="group border border-emerald-500/20 hover:neon-border-emerald bg-slate-950/80 p-8 rounded-2xl transition-all duration-300 flex flex-col items-center gap-4 shadow-2xl">
+                <div class="w-14 h-14 bg-emerald-500/10 rounded-full flex items-center justify-center text-3xl group-hover:bg-emerald-500/20 transition">🎥</div>
+                <span class="font-black text-emerald-400 tracking-wider uppercase text-base">Field Camera Node</span>
+                <span class="text-xs text-slate-400 leading-relaxed">৮-ডিজিটের সিক্রেট কোড লিখে অডিও ও ভিডিও ব্যাক-ক্যামেরা দিয়ে আল্ট্রা-লো-লেটেন্সিতে কাস্ট করুন।</span>
+            </button>
         </div>
-
-        <!-- Window 1: Director Desk Control Room -->
-        <div id="directorWindow" class="hidden w-full">
-            <div id="ratioBar" class="flex flex-col sm:flex-row justify-between items-center border-b border-slate-800 pb-4 mb-4 gap-4">
-                <div class="flex items-center gap-3">
-                    <button onclick="exitToLobby()" class="text-xs font-bold text-slate-400 hover:text-white bg-slate-950 px-3 py-2 rounded-xl border border-slate-800">← Exit Desk</button>
-                    <h2 class="font-black text-rose-400 tracking-wide uppercase text-sm">Director Desk</h2>
-                </div>
-                <button id="createRoomBtn" onclick="initiateDirectorRoom()" class="bg-rose-600 hover:bg-rose-500 text-white text-xs font-black px-5 py-2.5 rounded-xl transition">
-                    Initialize Cloud Network
-                </button>
-                <div id="codeDisplaySection" class="hidden items-center gap-2">
-                    <span class="text-xs font-bold text-slate-400">GROUND CAM CODE:</span>
-                    <span id="secretCodeBox" class="bg-rose-500/10 border border-rose-500/30 text-rose-400 font-mono font-black text-xl px-4 py-1.5 rounded-xl tracking-widest shadow-inner">--------</span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 flex flex-col gap-4">
-                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-850 flex justify-between items-center">
-                        <span class="text-xs font-black text-slate-400 uppercase">📺 Screen Aspect Ratio:</span>
-                        <select id="canvasRatioSelector" onchange="changeOutputAspectRatio()" class="bg-slate-900 border border-slate-800 text-xs font-bold text-rose-400 p-2 rounded-xl focus:outline-none cursor-pointer">
-                            <option value="16:9" selected>16:9 (YouTube Standard Wide)</option>
-                            <option value="4:3">4:3 (Classic Square TV)</option>
-                            <option value="9:16">9:16 (Vertical Short/Reel)</option>
-                            <option value="1:1">1:1 (Square Post Feed)</option>
-                        </select>
-                    </div>
-
-                    <div class="bg-slate-950 border-2 border-red-600 rounded-2xl overflow-hidden relative aspect-video flex items-center justify-center shadow-2xl" id="canvasFrameWrapper">
-                        <div class="bg-red-600 text-white text-[9px] font-black px-2.5 py-1.5 uppercase absolute top-0 left-0 z-10 rounded-br-lg tracking-widest">🔴 PGM OUT (LIVE AIR)</div>
-                        <canvas id="programCanvas" width="1280" height="720" class="w-full h-full bg-black block"></canvas>
-                    </div>
-
-                    <button onclick="launchCanvasFullscreen()" class="fullscreen-hide-btn w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-black py-3.5 rounded-xl uppercase tracking-widest shadow-xl transition">
-                        📺 GO FULLSCREEN (PGM ONLY)
-                    </button>
-
-                    <!-- Switcher Matrix Grid -->
-                    <div id="mainControls" class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 shadow-xl">
-                        <div class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3" id="activeCamCount">ENGAGED CHANNELS: 0/4</div>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                            <div onclick="selectLiveCamChannel('cam1')" id="box-cam1" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-35 transition-all select-none">
-                                <div class="text-[10px] font-black flex justify-between mb-1 pointer-events-none"><span>CAM 1</span><span id="status-cam1" class="text-red-500">OFFLINE</span></div>
-                                <div class="aspect-video bg-black rounded-lg mb-2 overflow-hidden relative pointer-events-none">
-                                    <video id="v-cam1" autoplay playsinline muted class="w-full h-full object-cover"></video>
-                                    <div id="thumb-cam1" class="absolute inset-0 flex items-center justify-center text-[10px] text-slate-600 bg-black font-mono">NO FEED</div>
-                                </div>
-                            </div>
-                            <div onclick="selectLiveCamChannel('cam2')" id="box-cam2" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-35 transition-all select-none">
-                                <div class="text-[10px] font-black flex justify-between mb-1 pointer-events-none"><span>CAM 2</span><span id="status-cam2" class="text-red-500">OFFLINE</span></div>
-                                <div class="aspect-video bg-black rounded-lg mb-2 overflow-hidden relative pointer-events-none">
-                                    <video id="v-cam2" autoplay playsinline muted class="w-full h-full object-cover"></video>
-                                    <div id="thumb-cam2" class="absolute inset-0 flex items-center justify-center text-[10px] text-slate-600 bg-black font-mono">NO FEED</div>
-                                </div>
-                            </div>
-                            <div onclick="selectLiveCamChannel('cam3')" id="box-cam3" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-35 transition-all select-none">
-                                <div class="text-[10px] font-black flex justify-between mb-1 pointer-events-none"><span>CAM 3</span><span id="status-cam3" class="text-red-500">OFFLINE</span></div>
-                                <div class="aspect-video bg-black rounded-lg mb-2 overflow-hidden relative pointer-events-none">
-                                    <video id="v-cam3" autoplay playsinline muted class="w-full h-full object-cover"></video>
-                                    <div id="thumb-cam3" class="absolute inset-0 flex items-center justify-center text-[10px] text-slate-600 bg-black font-mono">NO FEED</div>
-                                </div>
-                            </div>
-                            <div onclick="selectLiveCamChannel('cam4')" id="box-cam4" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-35 transition-all select-none">
-                                <div class="text-[10px] font-black flex justify-between mb-1 pointer-events-none"><span>CAM 4</span><span id="status-cam4" class="text-red-500">OFFLINE</span></div>
-                                <div class="aspect-video bg-black rounded-lg mb-2 overflow-hidden relative pointer-events-none">
-                                    <video id="v-cam4" autoplay playsinline muted class="w-full h-full object-cover"></video>
-                                    <div id="thumb-cam4" class="absolute inset-0 flex items-center justify-center text-[10px] text-slate-600 bg-black font-mono">NO FEED</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Side Control Desk Grid -->
-                <div id="mainControls" class="space-y-4 flex flex-col justify-start">
-                    <!-- Audio Board Mixer -->
-                    <div class="bg-slate-950 border border-slate-850 rounded-2xl p-4 shadow-xl">
-                        <div class="border-b border-slate-800 pb-2 mb-3 flex justify-between items-center">
-                            <h3 class="text-xs font-black uppercase text-emerald-400 tracking-wider">🎙️ Audio Matrix Mixer</h3>
-                        </div>
-                        <div class="w-full bg-slate-900 h-2.5 rounded-full mb-4 overflow-hidden p-0.5 border border-slate-800">
-                            <div id="vuMeterBar" class="audio-meter-bar w-0 h-full bg-gradient-to-r from-emerald-500 via-amber-400 to-red-500 rounded-full"></div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <button id="micToggleBtn" onclick="toggleCommentaryMic()" class="text-[10px] font-black py-2 rounded-lg bg-slate-800 text-slate-400 uppercase">MIC: OFF</button>
-                            <button id="fieldAudioToggleBtn" onclick="toggleFieldAudio()" class="text-[10px] font-black py-2 rounded-lg bg-emerald-600 text-white uppercase">FIELD: ON</button>
-                        </div>
-                    </div>
-
-                    <!-- TV Graphics Content Engine -->
-                    <div class="bg-slate-950 border border-slate-850 rounded-2xl p-4 shadow-xl">
-                        <h3 class="text-xs font-black uppercase text-slate-400 border-b border-slate-800 pb-2 mb-3">TV Graphics Control</h3>
-                        <div class="space-y-3">
-                            <div class="grid grid-cols-2 gap-2">
-                                <input type="text" id="scoreInput" value="IND 145/4" class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold focus:outline-none">
-                                <input type="text" id="oversInput" value="17.3 OVERS" class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold focus:outline-none">
-                            </div>
-                            <input type="text" id="batsmanInput" value="Virat Kohli 78*(45)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold focus:outline-none">
-                            <div class="grid grid-cols-2 gap-2 bg-slate-900/60 p-2 rounded-xl border border-slate-850">
-                                <input type="number" id="targetInput" placeholder="Target Run" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-[10px] font-bold focus:outline-none text-amber-400">
-                                <input type="text" id="customRrInput" value="CRR: 8.28" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-[10px] font-bold focus:outline-none text-blue-400">
-                            </div>
-                            <input type="text" id="sponsorInput" value="IPL FINAL MATCH 2026" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-rose-400 font-bold focus:outline-none">
-                        </div>
-                    </div>
-
-                    <!-- 🖥️ Monitor Link Remote Transmitter -->
-                    <div class="bg-slate-950 border border-slate-850 rounded-2xl p-4 shadow-xl">
-                        <h3 class="text-xs font-black uppercase text-blue-400 border-b border-slate-800 pb-2 mb-3">🖥️ Monitor Remote Transmitter</h3>
-                        <div class="space-y-3">
-                            <div id="monitorCodeContainer" class="hidden bg-slate-900 border border-slate-800 p-3 rounded-xl text-center">
-                                <span id="monitor10DigitCodeBox" class="text-blue-400 font-mono font-black text-lg tracking-widest">----------</span>
-                            </div>
-                            <button id="genMonitorBtn" onclick="generateDedicatedMonitorCode()" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black py-2.5 rounded-xl uppercase tracking-wider shadow transition">
-                                GENERATE MONITOR CODE
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Window 2: Ground Camera Ingestion Node -->
-        <div id="cameraWindow" class="hidden max-w-md mx-auto my-auto w-full vMix-panel rounded-3xl p-6 text-center shadow-2xl">
-            <h2 class="font-black text-emerald-400 uppercase text-xs tracking-wider mb-4">Field Transmission Node</h2>
-            <div id="joinGateWindow">
-                <input type="text" id="studioRoomCode" placeholder="CBP-XXXXXXXX" class="w-full bg-slate-950 border border-slate-850 rounded-2xl p-4 text-center font-mono font-black text-xl text-emerald-400 uppercase tracking-widest mb-6 focus:outline-none">
-                <button onclick="activateFieldCameraNode()" class="w-full bg-emerald-600 text-white font-bold py-4 rounded-xl uppercase text-xs tracking-widest shadow-xl">Establish Camera Uplink</button>
-            </div>
-            <div id="streamingActiveWindow" class="hidden">
-                <div class="aspect-video bg-black rounded-2xl overflow-hidden mb-4">
-                    <video id="localCamMonitor" autoplay playsinline muted class="w-full h-full object-cover"></video>
-                </div>
-            </div>
-        </div>
-
-        <!-- Window 3: External Virtual Monitor Mode (FIXED PLAYBACK) -->
-        <div id="monitorWindow" class="hidden max-w-md mx-auto my-auto w-full vMix-panel rounded-3xl p-6 text-center shadow-2xl">
-            <h2 class="font-black text-blue-400 uppercase text-xs tracking-wider mb-4">Virtual Live Monitor</h2>
-            <div id="monitorJoinGate">
-                <input type="text" id="monitorRoomCode" placeholder="MTR-XXXXXXXXXX" class="w-full bg-slate-950 border border-slate-850 rounded-2xl p-4 text-center font-mono font-black text-xl text-blue-400 uppercase tracking-widest mb-6 focus:outline-none">
-                <button onclick="activateVirtualMonitorNode()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl uppercase text-xs tracking-widest shadow-xl">Connect Live Feed Monitor</button>
-            </div>
-            <div id="monitorActiveView" class="hidden w-full flex flex-col gap-4">
-                <div class="aspect-video bg-black rounded-2xl overflow-hidden relative shadow-2xl" id="monitorWrapper">
-                    <!-- 🚨 অটোপ্লে পলিসি ব্রেকার লকিং এখানে ফিক্স করা হয়েছে -->
-                    <video id="remoteMonitorVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
-                </div>
-                <!-- সাউন্ড অন করার জন্য ডেডিকেটেড এক্সট্রা একশন বাটন -->
-                <button onclick="document.getElementById('remoteMonitorVideo').muted=false; this.style.display='none';" class="w-full bg-amber-500 text-slate-950 font-black py-2.5 rounded-xl uppercase text-xs tracking-wider">
-                    🔊 UNMUTE MONITOR AUDIO (ভিডিও সাউন্ড চালু করো)
-                </button>
-                <button onclick="document.getElementById('monitorWrapper').requestFullscreen()" class="w-full bg-blue-600 text-white text-xs font-black py-3 rounded-xl uppercase tracking-wider shadow">
-                    Template 📺 GO FULLSCREEN
-                </button>
-            </div>
-        </div>
-
-        <footer id="bottomFooter" class="text-center text-[10px] text-slate-600 mt-6 uppercase tracking-widest">
-            &copy; 2026 CBP • Engine v7.0.5-Stable-Matrix
-        </footer>
     </div>
 
-    <script>
-        const SERVER_URL = 'wss://server-ultra.onrender.com';
+    <div id="directorWindow" class="hidden max-w-7xl mx-auto w-full vMix-panel rounded-3xl p-4 md:p-6 shadow-2xl">
+        <div class="flex flex-col sm:flex-row justify-between items-center border-b border-slate-800 pb-4 mb-4 gap-4">
+            <div class="flex items-center gap-3">
+                <button onclick="exitToLobby()" class="text-xs font-bold text-slate-400 hover:text-white bg-slate-950 px-3 py-2 rounded-xl border border-slate-800 transition">← Exit Desk</button>
+                <h2 class="font-black text-rose-400 tracking-wide uppercase text-sm">Director Master Desk</h2>
+            </div>
+            <button id="createRoomBtn" onclick="initiateDirectorRoom()" class="bg-rose-600 hover:bg-rose-500 text-white text-xs font-black px-5 py-2.5 rounded-xl transition shadow-lg uppercase tracking-wider">
+                Initialize Cloud Network
+            </button>
+            <div id="codeDisplaySection" class="hidden items-center gap-2">
+                <span class="text-xs font-bold text-slate-400">SECRET ROOM CODE:</span>
+                <span id="secretCodeBox" class="bg-rose-500/10 border border-rose-500/30 text-rose-400 font-mono font-black text-xl px-4 py-1.5 rounded-xl tracking-widest shadow-inner">--------</span>
+            </div>
+        </div>
 
-        let wsDirector, wsCamera, wsMonitor;
-        let peerConnections = {};
-        let connectedCount = 0;
-        let activeLiveStreamId = null;
-        let renderOverlayActive = true;
-        let currentTargetRatio = "16:9";
-        let generatedMonitorCodeString = null; 
-
-        let audioCtx = null, masterAudioDestination = null, audioAnalyser = null;
-        let directorMicStream = null, directorMicNode = null;
-        let fieldAudioNodes = {}; 
-        let isMicEnabled = false, isFieldAudioEnabled = true;
-
-        const canvas = document.getElementById('programCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function forceEngageAudioEngine() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                masterAudioDestination = audioCtx.createMediaStreamDestination();
-                masterAudioDestination.connect(audioCtx.destination); 
-                audioAnalyser = audioCtx.createAnalyser();
-                audioAnalyser.fftSize = 32;
-                masterAudioDestination.connect(audioAnalyser);
-                updateVisualVUMeter();
-            }
-            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-            let btn = document.getElementById('audioEngageBtn');
-            btn.innerText = "🟢 Audio Pipeline Engaged";
-            btn.className = "bg-emerald-600 text-white text-xs font-black px-6 py-2 rounded-xl transition pointer-events-none animate-none";
-        }
-
-        function updateVisualVUMeter() {
-            if (!audioAnalyser) return;
-            const dataArray = new Uint8Array(audioAnalyser.frequencyBinCount);
-            function drawMeter() {
-                requestAnimationFrame(drawMeter);
-                audioAnalyser.getByteFrequencyData(dataArray);
-                let total = 0;
-                for (let i = 0; i < dataArray.length; i++) { total += dataArray[i]; }
-                let average = total / dataArray.length;
-                let widthPercent = Math.min(100, Math.floor((average / 128) * 100));
-                document.getElementById('vuMeterBar').style.width = (widthPercent > 5 ? widthPercent : 2) + '%';
-            }
-            drawMeter();
-        }
-
-        function launchCanvasFullscreen() {
-            let container = document.getElementById('canvasFrameWrapper');
-            if (container.requestFullscreen) { container.requestFullscreen(); }
-        }
-
-        window.addEventListener('keydown', (e) => {
-            if (e.key === '1') selectLiveCamChannel('cam1');
-            if (e.key === '2') selectLiveCamChannel('cam2');
-            if (e.key === '3') selectLiveCamChannel('cam3');
-            if (e.key === '4') selectLiveCamChannel('cam4');
-        });
-
-        function generateDedicatedMonitorCode() {
-            if (!wsDirector || wsDirector.readyState !== 1) return alert("প্রথমে ওপরের 'Initialize Cloud Network' বাটনে ক্লিক করে ক্লাউড কানেকশন চালু করুন!");
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let randomCode = 'MTR-';
-            for (let i = 0; i < 10; i++) { randomCode += chars.charAt(Math.floor(Math.random() * chars.length)); }
-            generatedMonitorCodeString = randomCode;
-            wsDirector.send(JSON.stringify({ type: 'register_monitor_node', monitorCode: generatedMonitorCodeString }));
-            document.getElementById('monitorCodeContainer').classList.remove('hidden');
-            document.getElementById('monitor10DigitCodeBox').innerText = generatedMonitorCodeString;
-        }
-
-        function changeOutputAspectRatio() {
-            let selector = document.getElementById('canvasRatioSelector');
-            if(!selector) return;
-            currentTargetRatio = selector.value;
-            let wrapper = document.getElementById('canvasFrameWrapper');
-            wrapper.classList.remove('aspect-video', 'aspect-square', 'aspect-[4/3]', 'aspect-[9/16]');
-
-            if (currentTargetRatio === "16:9") { canvas.width = 1280; canvas.height = 720; wrapper.classList.add('aspect-video'); }
-            else if (currentTargetRatio === "4:3") { canvas.width = 960; canvas.height = 720; wrapper.classList.add('aspect-[4/3]'); }
-            else if (currentTargetRatio === "9:16") { canvas.width = 720; canvas.height = 1280; wrapper.classList.add('aspect-[9/16]'); }
-            else if (currentTargetRatio === "1:1") { canvas.width = 720; canvas.height = 720; wrapper.classList.add('aspect-square'); }
-        }
-
-        function openWorkspace(mode) {
-            document.getElementById('lobbyGate').classList.add('hidden');
-            if (mode === 'director') { document.getElementById('directorWindow').classList.remove('hidden'); changeOutputAspectRatio(); }
-            else if (mode === 'camera') { document.getElementById('cameraWindow').classList.remove('hidden'); }
-            else if (mode === 'monitor') { document.getElementById('monitorWindow').classList.remove('hidden'); }
-        }
-
-        function exitToLobby() { window.location.reload(); }
-
-        async function toggleCommentaryMic() {
-            if (!audioCtx) forceEngageAudioEngine();
-            let btn = document.getElementById('micToggleBtn');
-            if (!isMicEnabled) {
-                try {
-                    directorMicStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    directorMicNode = audioCtx.createMediaStreamSource(directorMicStream);
-                    directorMicNode.connect(masterAudioDestination);
-                    isMicEnabled = true;
-                    btn.innerText = "MIC: ONLINE";
-                } catch (e) { alert("মাইক্রোফোন পারমিশন চেক করুন!"); }
-            } else {
-                if (directorMicStream) { directorMicStream.getTracks().forEach(t => t.stop()); }
-                isMicEnabled = false;
-                btn.innerText = "MIC: OFF";
-            }
-        }
-
-        function toggleFieldAudio() {
-            isFieldAudioEnabled = !isFieldAudioEnabled;
-            document.getElementById('fieldAudioToggleBtn').innerText = isFieldAudioEnabled ? "FIELD: ON" : "FIELD: MUTED";
-            Object.keys(fieldAudioNodes).forEach(id => {
-                if (fieldAudioNodes[id] && fieldAudioNodes[id].gain) { fieldAudioNodes[id].gain.value = isFieldAudioEnabled ? 1.0 : 0.0; }
-            });
-        }
-
-        function initiateDirectorRoom() {
-            wsDirector = new WebSocket(SERVER_URL);
-            wsDirector.onopen = () => {
-                wsDirector.send(JSON.stringify({ type: 'create_room' }));
-                document.getElementById('createRoomBtn').classList.add('hidden');
-                document.getElementById('codeDisplaySection').classList.replace('hidden', 'flex');
-            };
-            wsDirector.onmessage = async (message) => {
-                let data = JSON.parse(message.data);
-                if (data.type === 'room_created') { document.getElementById('secretCodeBox').innerText = data.roomCode; }
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 flex flex-col gap-4">
                 
-                else if (data.type === 'monitor_requested') {
-                    let pcMon = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-                    peerConnections[data.monitorId] = pcMon;
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-850 flex flex-wrap justify-between items-center gap-3">
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-wider">📺 Screen Aspect Ratio:</span>
+                    <select id="canvasRatioSelector" onchange="changeOutputAspectRatio()" class="bg-slate-900 border border-slate-800 text-xs font-bold text-rose-400 p-2 rounded-xl focus:outline-none focus:border-rose-500 cursor-pointer">
+                        <option value="16:9" selected>16:9 (YouTube / FB Live Wide)</option>
+                        <option value="4:3">4:3 (Classic TV Square)</option>
+                        <option value="9:16">9:16 (Vertical Short / Reel Live)</option>
+                        <option value="1:1">1:1 (Square Feed)</option>
+                    </select>
+                </div>
 
-                    if (!audioCtx) forceEngageAudioEngine();
-                    const canvasStream = canvas.captureStream(30);
+                <div class="bg-slate-950 border-2 border-red-600 rounded-2xl overflow-hidden shadow-2xl relative flex items-center justify-center aspect-video transition-all duration-300" id="canvasFrameWrapper">
+                    <div class="bg-red-600 text-white text-[9px] font-black px-2.5 py-1.5 uppercase tracking-widest absolute top-0 left-0 z-10 rounded-br-lg">🔴 PGM OUT (LIVE AIR)</div>
+                    <canvas id="programCanvas" class="bg-black max-w-full max-h-full block object-cover"></canvas>
+                </div>
+
+                <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-400">Camera Switching Matrix</h3>
+                        <span id="activeCamCount" class="text-xs font-mono text-slate-500">ENGAGED CHANNELS: 0/4</span>
+                    </div>
                     
-                    if (masterAudioDestination && masterAudioDestination.stream.getAudioTracks().length > 0) {
-                        canvasStream.addTrack(masterAudioDestination.stream.getAudioTracks()[0]);
-                    }
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div onclick="selectLiveCamChannel('cam1')" id="box-cam1" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-20 scale-95 transition-all duration-300 select-none">
+                            <div class="text-[10px] font-black flex justify-between uppercase mb-1 pointer-events-none">
+                                <span>CAMERA 1</span><span id="status-cam1" class="text-red-500">OFFLINE</span>
+                            </div>
+                            <div class="aspect-video bg-black rounded-lg mb-2 overflow-hidden border border-slate-800 relative pointer-events-none">
+                                <video id="v-cam1" autoplay playsinline muted class="w-full h-full object-cover"></video>
+                                <div id="thumb-cam1" class="absolute inset-0 flex items-center justify-center text-xs text-slate-600 font-mono bg-black">NO FEED</div>
+                            </div>
+                            <div class="text-[9px] font-mono text-slate-400 flex justify-between bg-slate-950 p-1 rounded border border-slate-900 pointer-events-none">
+                                <span>Bitrate:</span><span id="bitrate-cam1">0 Kbps</span>
+                            </div>
+                        </div>
+                        <div onclick="selectLiveCamChannel('cam2')" id="box-cam2" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-20 scale-95 transition-all duration-300 select-none">
+                            <div class="text-[10px] font-black flex justify-between uppercase mb-1 pointer-events-none">
+                                <span>CAMERA 2</span><span id="status-cam2" class="text-red-500">OFFLINE</span>
+                            </div>
+                            <div class="aspect-video bg-black rounded-lg mb-2 overflow-hidden border border-slate-800 relative pointer-events-none">
+                                <video id="v-cam2" autoplay playsinline muted class="w-full h-full object-cover"></video>
+                                <div id="thumb-cam2" class="absolute inset-0 flex items-center justify-center text-xs text-slate-600 font-mono bg-black">NO FEED</div>
+                            </div>
+                            <div class="text-[9px] font-mono text-slate-400 flex justify-between bg-slate-950 p-1 rounded border border-slate-900 pointer-events-none">
+                                <span>Bitrate:</span><span id="bitrate-cam2">0 Kbps</span>
+                            </div>
+                        </div>
+                        <div onclick="selectLiveCamChannel('cam3')" id="box-cam3" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-20 scale-95 transition-all duration-300 select-none">
+                            <div class="text-[10px] font-black flex justify-between uppercase mb-1 pointer-events-none">
+                                <span>CAMERA 3</span><span id="status-cam3" class="text-red-500">OFFLINE</span>
+                            </div>
+                            <div class="aspect-video bg-black rounded-lg mb-2 overflow-hidden border border-slate-800 relative pointer-events-none">
+                                <video id="v-cam3" autoplay playsinline muted class="w-full h-full object-cover"></video>
+                                <div id="thumb-cam3" class="absolute inset-0 flex items-center justify-center text-xs text-slate-600 font-mono bg-black">NO FEED</div>
+                            </div>
+                            <div class="text-[9px] font-mono text-slate-400 flex justify-between bg-slate-950 p-1 rounded border border-slate-900 pointer-events-none">
+                                <span>Bitrate:</span><span id="bitrate-cam3">0 Kbps</span>
+                            </div>
+                        </div>
+                        <div onclick="selectLiveCamChannel('cam4')" id="box-cam4" class="border border-slate-800 bg-slate-900 rounded-xl p-2 cursor-pointer opacity-20 scale-95 transition-all duration-300 select-none">
+                            <div class="text-[10px] font-black flex justify-between uppercase mb-1 pointer-events-none">
+                                <span>CAMERA 4</span><span id="status-cam4" class="text-red-500">OFFLINE</span>
+                            </div>
+                            <div class="aspect-video bg-black rounded-lg mb-2 overflow-hidden border border-slate-800 relative pointer-events-none">
+                                <video id="v-cam4" autoplay playsinline muted class="w-full h-full object-cover"></video>
+                                <div id="thumb-cam4" class="absolute inset-0 flex items-center justify-center text-xs text-slate-600 font-mono bg-black">NO FEED</div>
+                            </div>
+                            <div class="text-[9px] font-mono text-slate-400 flex justify-between bg-slate-950 p-1 rounded border border-slate-900 pointer-events-none">
+                                <span>Bitrate:</span><span id="bitrate-cam4">0 Kbps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                    canvasStream.getTracks().forEach(track => pcMon.addTrack(track, canvasStream));
+            <div class="space-y-4 flex flex-col justify-between">
+                <div class="bg-slate-950 border border-slate-850 rounded-2xl p-4">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-4">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-400">TV Graphics Control</h3>
+                        <button id="overlaySwitchBtn" onclick="toggleScoreboardOverlay()" class="bg-blue-600 text-[10px] font-black px-3 py-1 rounded-lg uppercase transition">Graphics: ON</button>
+                    </div>
                     
-                    pcMon.onicecandidate = (e) => {
-                        if (e.candidate) wsDirector.send(JSON.stringify({ type: 'ice-candidate', targetId: data.monitorId, candidate: e.candidate }));
-                    };
+                    <div class="space-y-3">
+                        <input type="text" id="scoreInput" value="IND 145/4" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-mono font-bold focus:outline-none">
+                        <input type="text" id="oversInput" value="17.3 OVERS" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-mono font-bold focus:outline-none">
+                        <input type="text" id="batsmanInput" value="Virat Kohli 78*(45)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold focus:outline-none">
+                        <input type="text" id="sponsorInput" value="IPL FINAL MATCH 2026" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-rose-400 font-bold focus:outline-none">
+                    </div>
+                </div>
 
-                    let offer = await pcMon.createOffer();
-                    await pcMon.setLocalDescription(offer);
-                    wsDirector.send(JSON.stringify({ type: 'offer', targetId: data.monitorId, offer }));
-                }
-                
-                else if (data.type === 'camera_joined') {
-                    let pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-                    peerConnections[data.cameraId] = pc;
-                    connectedCount++;
-                    document.getElementById('activeCamCount').innerText = `ENGAGED CHANNELS: ${connectedCount}/4`;
-                    document.getElementById(`status-${data.cameraId}`).innerText = "🟢 LIVE";
-                    document.getElementById(`box-${data.cameraId}`).classList.remove('opacity-35');
-                    document.getElementById(`thumb-${data.cameraId}`).style.display = "none";
+                <div class="bg-slate-950 border border-slate-850 rounded-2xl p-4">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-rose-500">Social Media RTMP Stream</h3>
+                        <span id="streamIndicator" class="text-[9px] bg-slate-900 text-slate-500 font-bold px-2 py-0.5 rounded border border-slate-800 uppercase">OFF AIR</span>
+                    </div>
 
-                    pc.ontrack = (event) => {
-                        let targetVideo = document.getElementById(`v-${data.cameraId}`);
-                        if (event.streams && event.streams[0]) {
-                            targetVideo.srcObject = event.streams[0];
-                            targetVideo.onloadedmetadata = () => { targetVideo.play().catch(e => console.log(e)); };
-                            if (!audioCtx) forceEngageAudioEngine();
-                            if (event.streams[0].getAudioTracks().length > 0) {
-                                let sourceNode = audioCtx.createMediaStreamSource(event.streams[0]);
-                                let gainNode = audioCtx.createGain();
-                                gainNode.gain.value = isFieldAudioEnabled ? 1.0 : 0.0;
-                                sourceNode.connect(gainNode);
-                                gainNode.connect(masterAudioDestination);
-                                fieldAudioNodes[data.cameraId] = gainNode;
-                            }
-                        }
-                    };
-                    pc.onicecandidate = (e) => { if (e.candidate) wsDirector.send(JSON.stringify({ type: 'ice-candidate', targetId: data.cameraId, candidate: e.candidate })); };
-                    let offer = await pc.createOffer({ offerToReceiveVideo: true, offerToReceiveAudio: true });
-                    await pc.setLocalDescription(offer);
-                    wsDirector.send(JSON.stringify({ type: 'offer', targetId: data.cameraId, offer }));
-                }
-                else if (data.type === 'answer') { 
-                    let target = peerConnections[data.targetId];
-                    if(target) await target.setRemoteDescription(new RTCSessionDescription(data.answer)); 
-                }
-                else if (data.type === 'ice-candidate') { 
-                    let target = peerConnections[data.targetId];
-                    if(target) await target.addIceCandidate(new RTCIceCandidate(data.candidate)); 
-                }
-            };
-        }
+                    <div class="space-y-2 mb-3">
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 uppercase mb-0.5">Stream URL</label>
+                            <input type="text" id="rtmpUrlInput" placeholder="e.g. rtmp://a.rtmp.youtube.com/live2" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-300 font-mono focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-bold text-slate-500 uppercase mb-0.5">Stream Key</label>
+                            <input type="password" id="rtmpKeyInput" placeholder="Paste Secret Stream Key Here" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-300 font-mono focus:outline-none">
+                        </div>
+                    </div>
 
-        function selectLiveCamChannel(camId) {
-            let targetVideo = document.getElementById(`v-${camId}`);
-            if(!targetVideo || !targetVideo.srcObject) return; 
-            canvas.style.filter = "brightness(0.2) blur(5px)";
-            setTimeout(() => {
-                activeLiveStreamId = camId;
-                targetVideo.play().catch(e => console.log(e));
-                canvas.style.filter = "brightness(1) blur(0px)";
-            }, 180);
-            ['cam1','cam2','cam3','cam4'].forEach(id => document.getElementById(`box-${id}`).classList.remove('border-red-600', 'ring-2', 'ring-red-600/50'));
-            document.getElementById(`box-${camId}`).classList.add('border-red-600', 'ring-2', 'ring-red-600/50');
-        }
+                    <div class="flex gap-2">
+                        <button id="startLiveBtn" onclick="toggleCloudStreaming()" class="w-full bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-black py-2.5 rounded-xl uppercase tracking-wider transition">
+                            GO LIVE ON YT/FB
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        function toggleScoreboardOverlay() { renderOverlayActive = !renderOverlayActive; }
+    <div id="cameraWindow" class="hidden max-w-md mx-auto w-full vMix-panel rounded-3xl p-6 shadow-2xl text-center">
+        <div class="flex items-center gap-3 mb-6 border-b border-slate-800 pb-3">
+            <button onclick="exitToLobby()" class="text-xs font-bold text-slate-400 hover:text-white bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 transition">← Cancel</button>
+            <h2 class="font-black text-emerald-400 tracking-wide uppercase text-xs">Field Transmission Node</h2>
+        </div>
 
-        function renderBroadcastPipeline() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (activeLiveStreamId) {
-                let liveVideo = document.getElementById(`v-${activeLiveStreamId}`);
-                if (liveVideo && liveVideo.srcObject) {
-                    ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    let vW = liveVideo.videoWidth || 1280; let vH = liveVideo.videoHeight || 720;
-                    let cRatio = canvas.width / canvas.height; let vRatio = vW / vH;
-                    let rW, rH, xO, yO;
-                    if (vRatio > cRatio) { rW = canvas.width; rH = canvas.width / vRatio; xO = 0; yO = (canvas.height - rH) / 2; }
-                    else { rH = canvas.height; rW = canvas.height * vRatio; xO = (canvas.width - rW) / 2; yO = 0; }
-                    ctx.drawImage(liveVideo, xO, yO, rW, rH);
-                }
-            } else {
-                ctx.fillStyle = '#020617'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#475569'; ctx.font = 'bold 24px sans-serif'; ctx.textAlign = 'center';
-                ctx.fillText('SELECT AN ACTIVE CAMERA CHANNEL BELOW TO SWITCH LIVE', canvas.width / 2, canvas.height / 2);
-            }
+        <div id="joinGateWindow" class="transition-all duration-300">
+            <p class="text-xs text-slate-400 mb-4 leading-relaxed">মাস্টার ডিরেক্টর ড্যাশবোর্ডে জেনারেট হওয়া ৮-ডিজিটের সিক্রেট কোডটি এখানে টাইপ বা পেস্ট করে কানেক্ট করুন।</p>
+            <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-amber-400 text-[11px] font-bold mb-6 text-center">
+                📢 ক্যামেরা কানেক্ট করার আগে আপনার মোবাইলটিকে আড়াআড়ি (Landscape) করে নিন।
+            </div>
+            <div class="mb-6 text-left">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-wider text-center">Secret Encryption Code</label>
+                <input type="text" id="studioRoomCode" placeholder="CBP-XXXXXXXX" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-center font-mono font-black text-xl text-emerald-400 uppercase tracking-widest focus:outline-none focus:border-emerald-500 transition shadow-inner">
+            </div>
+            <button onclick="activateFieldCameraNode()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-emerald-600/20 uppercase text-xs tracking-widest font-black">
+                Establish Secure Uplink
+            </button>
+        </div>
 
-            if (renderOverlayActive) {
-                ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
-                let baseOffset = (currentTargetRatio === "9:16") ? 25 : 60;
-                let barWidth = (currentTargetRatio === "9:16" || currentTargetRatio === "1:1") ? canvas.width - (baseOffset * 2) : 720;
+        <div id="streamingActiveWindow" class="hidden transition-all duration-300">
+            <div class="flex justify-center items-center gap-2 mb-4">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                <h2 id="assignedNodeName" class="text-emerald-400 font-black tracking-widest uppercase text-xs">FEED INJECTED SUCCESSFULLY</h2>
+            </div>
+            <div class="aspect-video bg-black rounded-2xl overflow-hidden border border-slate-800 mb-4 shadow-2xl">
+                <video id="localCamMonitor" autoplay playsinline muted class="w-full h-full object-cover"></video>
+            </div>
+            <div class="bg-slate-950 border border-slate-900 rounded-xl p-4 text-xs font-mono text-slate-400 space-y-2 text-left">
+                <div class="flex justify-between border-b border-slate-900 pb-1.5">
+                    <span>Pipeline Integrity:</span><span id="localSignalQuality" class="text-emerald-400 font-bold">Optimizing...</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                ctx.fillStyle = 'rgba(244, 63, 94, 0.9)'; ctx.fillRect(baseOffset, 40, (currentTargetRatio === "9:16" ? 220 : 260), 32);
-                ctx.fillStyle = '#ffffff'; ctx.font = 'bold 13px sans-serif'; ctx.fillText(document.getElementById('sponsorInput').value.toUpperCase(), baseOffset + 15, 61);
+    <footer class="text-center text-[10px] text-slate-600 mt-6 uppercase tracking-widest">
+        &copy; 2026 Cricket Broadcast Pro • Pure Cloud Base Matrix
+    </footer>
 
-                ctx.fillStyle = 'rgba(15, 23, 42, 0.95)'; ctx.fillRect(baseOffset, canvas.height - 100, barWidth, 55);
-                ctx.fillStyle = '#fbbf24'; ctx.fillRect(baseOffset, canvas.height - 100, 6, 55);
-
-                ctx.fillStyle = '#ffffff'; ctx.font = (currentTargetRatio === "9:16") ? 'bold 18px monospace' : 'bold 26px monospace';
-                ctx.fillText(document.getElementById('scoreInput').value, baseOffset + 25, canvas.height - 63);
-
-                let rrText = document.getElementById('customRrInput').value;
-                let targetVal = document.getElementById('targetInput').value;
-                if(targetVal) { rrText += " | TARGET: " + targetVal; }
-
-                if (currentTargetRatio === "9:16") {
-                    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 11px sans-serif'; ctx.fillText(document.getElementById('oversInput').value.toUpperCase(), baseOffset + 180, canvas.height - 82);
-                    ctx.fillStyle = '#e2e8f0'; ctx.font = 'italic 11px sans-serif'; ctx.fillText(document.getElementById('batsmanInput').value, baseOffset + 180, canvas.height - 68);
-                    ctx.fillStyle = '#fbbf24'; ctx.font = 'bold 10px sans-serif'; ctx.fillText(rrText.toUpperCase(), baseOffset + 25, canvas.height - 50);
-                } else {
-                    ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 16px sans-serif'; ctx.fillText(document.getElementById('oversInput').value.toUpperCase(), baseOffset + 240, canvas.height - 64);
-                    ctx.fillStyle = '#3b82f6'; ctx.fillRect(baseOffset + 380, canvas.height - 90, 2, 35);
-                    ctx.fillStyle = '#e2e8f0'; ctx.font = 'italic 18px sans-serif'; ctx.fillText(document.getElementById('batsmanInput').value, baseOffset + 400, canvas.height - 64);
-                    ctx.fillStyle = '#a7f3d0'; ctx.font = 'bold 12px monospace'; ctx.fillText(rrText.toUpperCase(), baseOffset + 25, canvas.height - 52);
-                }
-            }
-            requestAnimationFrame(renderBroadcastPipeline);
-        }
-        renderBroadcastPipeline();
-
-        async function activateFieldCameraNode() {
-            let codeInput = document.getElementById('studioRoomCode').value.trim().toUpperCase();
-            if(!codeInput) return alert("কোড দিন!");
-            try {
-                localMediaStream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720, facingMode: "environment" }, audio: true });
-            } catch (err) { return alert("ক্যামেরা অন করা যায়নি!"); }
-
-            wsCamera = new WebSocket(SERVER_URL);
-            wsCamera.onopen = () => wsCamera.send(JSON.stringify({ type: 'join_room', roomCode: codeInput }));
-            wsCamera.onmessage = async (message) => {
-                let data = JSON.parse(message.data);
-                if (data.type === 'joined_successfully') {
-                    document.getElementById('joinGateWindow').classList.add('hidden');
-                    document.getElementById('streamingActiveWindow').classList.remove('hidden');
-                    document.getElementById('localCamMonitor').srcObject = localMediaStream;
-                }
-                else if (data.type === 'offer') {
-                    pcCam = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-                    localMediaStream.getTracks().forEach(track => pcCam.addTrack(track, localMediaStream));
-                    pcCam.onicecandidate = (e) => { if (e.candidate) wsCamera.send(JSON.stringify({ type: 'ice-candidate', targetId: data.targetId, candidate: e.candidate })); };
-                    await pcCam.setRemoteDescription(new RTCSessionDescription(data.offer));
-                    let answer = await pcCam.createAnswer();
-                    await pcCam.setLocalDescription(answer);
-                    wsCamera.send(JSON.stringify({ type: 'answer', targetId: data.targetId, answer }));
-                }
-                else if (data.type === 'ice-candidate' && pcCam) { await pcCam.addIceCandidate(new RTCIceCandidate(data.candidate)); }
-            };
-        }
-
-        function activateVirtualMonitorNode() {
-            let codeInput = document.getElementById('monitorRoomCode').value.trim().toUpperCase();
-            if(!codeInput) return alert("১০-ডিজিট কোডটি দিন!");
-
-            wsMonitor = new WebSocket(SERVER_URL);
-            wsMonitor.onopen = () => wsMonitor.send(JSON.stringify({ type: 'join_monitor_room', roomCode: codeInput }));
-            
-            wsMonitor.onmessage = async (message) => {
-                let data = JSON.parse(message.data);
-                
-                if (data.type === 'monitor_joined_successfully') {
-                    document.getElementById('monitorJoinGate').classList.add('hidden');
-                    document.getElementById('monitorActiveView').classList.remove('hidden');
-                }
-                else if (data.type === 'offer') {
-                    pcMonitor = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-                    
-                    pcMonitor.ontrack = (event) => {
-                        let remoteVideo = document.getElementById('remoteMonitorVideo');
-                        if (event.streams && event.streams[0]) {
-                            remoteVideo.srcObject = event.streams[0];
-                            remoteVideo.play().catch(e => {
-                                // ক্রোম অটোপ্লে সিকিউরিটি বাইপাস ব্যাকআপ ট্র্রিগার
-                                remoteVideo.muted = true;
-                                remoteVideo.play();
-                            });
-                        }
-                    };
-
-                    pcMonitor.onicecandidate = (e) => {
-                        if (e.candidate) wsMonitor.send(JSON.stringify({ type: 'ice-candidate', targetId: data.targetId, candidate: e.candidate }));
-                    };
-
-                    await pcMonitor.setRemoteDescription(new RTCSessionDescription(data.offer));
-                    let answer = await pcMonitor.createAnswer();
-                    await pcMonitor.setLocalDescription(answer);
-                    wsMonitor.send(JSON.stringify({ type: 'answer', targetId: data.targetId, answer }));
-                }
-                else if (data.type === 'ice-candidate' && pcMonitor) {
-                    await pcMonitor.addIceCandidate(new RTCIceCandidate(data.candidate));
-                }
-            };
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
